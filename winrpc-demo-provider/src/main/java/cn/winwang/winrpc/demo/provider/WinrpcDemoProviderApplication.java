@@ -1,26 +1,18 @@
 package cn.winwang.winrpc.demo.provider;
 
-import cn.winwang.winrpc.core.annotation.WinProvider;
 import cn.winwang.winrpc.core.api.RpcRequest;
 import cn.winwang.winrpc.core.api.RpcResponse;
 import cn.winwang.winrpc.core.provider.ProviderBootstrap;
 import cn.winwang.winrpc.core.provider.ProviderConfig;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @Import({ProviderConfig.class})
@@ -44,13 +36,23 @@ public class WinrpcDemoProviderApplication {
     @Bean
     ApplicationRunner providerRun() {
         return x -> {
+            // test 1 parameters method
             RpcRequest request = new RpcRequest();
             request.setService("cn.winwang.winrpc.demo.api.UserService");
-            request.setMethod("findById");
+            request.setMethodSign("findById@1_int");
             request.setArgs(new Object[]{100});
 
             RpcResponse rpcResponse = invoke(request);
             System.out.println("return : " + rpcResponse.getData());
+
+            // test 2 parameters method
+            RpcRequest request1 = new RpcRequest();
+            request1.setService("cn.winwang.winrpc.demo.api.UserService");
+            request1.setMethodSign("findById@2_int_java.lang.String");
+            request1.setArgs(new Object[]{100, "CC"});
+
+            RpcResponse rpcResponse1 = invoke(request1);
+            System.out.println("return : " + rpcResponse1.getData());
 
         };
     }

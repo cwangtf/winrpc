@@ -3,15 +3,21 @@ package cn.winwang.winrpc.core.provider;
 import cn.winwang.winrpc.core.annotation.WinProvider;
 import cn.winwang.winrpc.core.api.RpcRequest;
 import cn.winwang.winrpc.core.api.RpcResponse;
+import cn.winwang.winrpc.core.meta.ProviderMeta;
+import cn.winwang.winrpc.core.util.MethodUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Description for this class.
@@ -24,11 +30,12 @@ public class ProviderBootstrap implements ApplicationContextAware {
 
     ApplicationContext applicationContext;
 
-    private Map<String, Object> skeleton = new HashMap<>();
+    // 桩子
+    private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
 
     @PostConstruct // init-method
     // PreDestroy
-    public void buildProviders() {
+    public void start() {
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(WinProvider.class);
         providers.forEach((x,y) -> System.out.println(x));
 //        skeleton.putAll(providers);
@@ -40,22 +47,31 @@ public class ProviderBootstrap implements ApplicationContextAware {
 
     private void getInterface(Object x) {
         Class<?> itfer = x.getClass().getInterfaces()[0];
-        skeleton.put(itfer.getCanonicalName(), x);
+        Method[] methods = itfer.getMethods();
+        for (Method method : methods) {
+            if (MethodUtils.checkLocalMethod(method)) {
+                continue;
+            }
+            createProvider(itfer, x, method);
+        }
+    }
+
+    private void createProvider(Class<?> itfer, Object x, Method method) {
+        ProviderMeta meta = new ProviderMeta();
+        meta.setMethod(method);
+        meta.setServiceImpl(x);
+        meta.setMethodSign(MethodUtils.methodSign(method));
+        System.out.println(" create a provider:" + meta);
+        skeleton.add(itfer.getCanonicalName(), meta);
     }
 
     public RpcResponse invoke(RpcRequest request) {
-
-        String methodName = request.getMethod();
-        if (methodName.equals("toString") || methodName.equals("hashCode")) {
-            return null;
-        }
-
-
         RpcResponse rpcResponse = new RpcResponse();
-        Object bean = skeleton.get(request.getService());
+        List<ProviderMeta> providerMetas = skeleton.get(request.getService());
         try {
-            Method method = findMethod(bean.getClass(), request.getMethod());
-            Object result = method.invoke(bean, request.getArgs());
+            ProviderMeta meta = findProviderMeta(providerMetas, request.getMethodSign());
+            Method method = meta.getMethod();
+            Object result = method.invoke(meta.getServiceImpl(), request.getArgs());
             rpcResponse.setStatus(true);
             rpcResponse.setData(result);
             return rpcResponse;
@@ -67,13 +83,9 @@ public class ProviderBootstrap implements ApplicationContextAware {
         return rpcResponse;
     }
 
-    private Method findMethod(Class<?> aClass, String methodName) {
-        for(Method method : aClass.getMethods()) {
-            if (method.getName().equals(methodName)) { // 有多个重名方法
-                return method;
-            }
-        }
-        return null;
+    private ProviderMeta findProviderMeta(List<ProviderMeta> providerMetas, String methodSign) {
+        Optional<ProviderMeta> optional = providerMetas.stream().filter(x -> x.getMethodSign().equals(methodSign)).findFirst();
+        return optional.orElse(null);
     }
 
 }

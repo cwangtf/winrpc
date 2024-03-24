@@ -2,6 +2,7 @@ package cn.winwang.winrpc.core.consumer;
 
 import cn.winwang.winrpc.core.api.RpcRequest;
 import cn.winwang.winrpc.core.api.RpcResponse;
+import cn.winwang.winrpc.core.util.MethodUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
@@ -37,16 +38,14 @@ public class WinInvocationHandler implements InvocationHandler {
         RpcRequest rpcRequest = new RpcRequest();
         // class全限定名称
         rpcRequest.setService(service.getCanonicalName());
-        rpcRequest.setMethod(method.getName());
+        rpcRequest.setMethodSign(MethodUtils.methodSign(method));
         rpcRequest.setArgs(args);
 
         RpcResponse rpcResponse = post(rpcRequest);
 
         if (rpcResponse.isStatus()) {
-            // TODO 处理基本类型
             Object data = rpcResponse.getData();
-            if (data instanceof JSONObject) {
-                JSONObject jsonResult = (JSONObject) data;
+            if (data instanceof JSONObject jsonResult) {
                 return jsonResult.toJavaObject(method.getReturnType());
             } else {
                 return data;
