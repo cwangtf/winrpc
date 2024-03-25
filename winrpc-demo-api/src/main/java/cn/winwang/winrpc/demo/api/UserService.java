@@ -1,5 +1,8 @@
 package cn.winwang.winrpc.demo.api;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Description for this class.
  *
@@ -27,5 +30,9 @@ public interface UserService {
     long[] getLongIds();
 
     int[] getIds(int[] ids);
+
+    List<User> getList(List<User> userList);
+
+    Map<String, User> getMap(Map<String, User> userMap);
 
 }
