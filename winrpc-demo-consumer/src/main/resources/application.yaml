@@ -3,3 +3,5 @@ server:
 spring:
   application:
     name: winrpc-demo-consumer
+winrpc:
+  providers: http://localhost:8081,http://localhost:8082

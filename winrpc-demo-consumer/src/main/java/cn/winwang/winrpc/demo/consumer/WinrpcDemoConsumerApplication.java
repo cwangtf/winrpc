@@ -1,6 +1,8 @@
 package cn.winwang.winrpc.demo.consumer;
 
 import cn.winwang.winrpc.core.annotation.WinConsumer;
+import cn.winwang.winrpc.core.api.RpcRequest;
+import cn.winwang.winrpc.core.api.RpcResponse;
 import cn.winwang.winrpc.core.consumer.ConsumerConfig;
 import cn.winwang.winrpc.demo.api.Order;
 import cn.winwang.winrpc.demo.api.OrderService;
@@ -12,6 +14,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,17 +24,23 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootApplication
+@RestController
 @Import({ConsumerConfig.class})
 public class WinrpcDemoConsumerApplication {
 
     @WinConsumer
     UserService userService;
 
-    @WinConsumer
-    OrderService orderService;
+//    @WinConsumer
+//    OrderService orderService;
+//
+//    @Autowired
+//    Demo2 demo2;
 
-    @Autowired
-    Demo2 demo2;
+    @RequestMapping("/")
+    public User findBy(int id) {
+        return userService.findById(id);
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(WinrpcDemoConsumerApplication.class, args);

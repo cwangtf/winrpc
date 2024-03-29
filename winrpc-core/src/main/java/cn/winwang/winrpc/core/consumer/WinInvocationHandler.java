@@ -1,7 +1,6 @@
 package cn.winwang.winrpc.core.consumer;
 
-import cn.winwang.winrpc.core.api.RpcRequest;
-import cn.winwang.winrpc.core.api.RpcResponse;
+import cn.winwang.winrpc.core.api.*;
 import cn.winwang.winrpc.core.util.MethodUtils;
 import cn.winwang.winrpc.core.util.TypeUtils;
 import com.alibaba.fastjson.JSON;
@@ -26,9 +25,16 @@ public class WinInvocationHandler implements InvocationHandler {
 
     Class<?> service;
 
-    public WinInvocationHandler(Class<?> clazz) {
+    RpcContext context;
+
+    List<String> providers;
+
+    public WinInvocationHandler(Class<?> clazz, RpcContext context, List<String> providers) {
         this.service = clazz;
+        this.context = context;
+        this.providers = providers;
     }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
@@ -43,7 +49,10 @@ public class WinInvocationHandler implements InvocationHandler {
         rpcRequest.setMethodSign(MethodUtils.methodSign(method));
         rpcRequest.setArgs(args);
 
-        RpcResponse rpcResponse = post(rpcRequest);
+        List<String> urls = context.getRouter().route(this.providers);
+        String url = (String) context.getLoadBalancer().choose(urls);
+        System.out.println("loadBalancer.choose(urls) ==> " + url);
+        RpcResponse rpcResponse = post(rpcRequest, url);
 
         if (rpcResponse.isStatus()) {
             Object data = rpcResponse.getData();
@@ -113,11 +122,11 @@ public class WinInvocationHandler implements InvocationHandler {
             .connectTimeout(1, TimeUnit.SECONDS) // 建立HTTP\TCP连接超时
             .build();
 
-    private RpcResponse post(RpcRequest rpcRequest) {
+    private RpcResponse post(RpcRequest rpcRequest, String url) {
         String reqJson = JSON.toJSONString(rpcRequest);
         System.out.println(" ===> reqJson = " + reqJson);
         Request request = new Request.Builder()
-                .url("http://localhost:8080/")
+                .url(url)
                 .post(RequestBody.create(reqJson, JSONTYPE))
                 .build();
         try {

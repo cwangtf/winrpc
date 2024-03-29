@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: winrpc-demo-provider
+server:
+  port: 8081

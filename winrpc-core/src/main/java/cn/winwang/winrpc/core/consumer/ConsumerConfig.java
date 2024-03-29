@@ -1,5 +1,9 @@
 package cn.winwang.winrpc.core.consumer;
 
+import cn.winwang.winrpc.core.api.LoadBalancer;
+import cn.winwang.winrpc.core.api.Router;
+import cn.winwang.winrpc.core.cluster.RandomLoadBalancer;
+import cn.winwang.winrpc.core.cluster.RoundRobinLoadBalancer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -28,5 +32,17 @@ public class ConsumerConfig {
             consumerBootstrap.start();
             System.out.println("consumerBootstrap started ...");
         };
+    }
+
+    @Bean
+    public LoadBalancer loadBalancer() {
+//        return LoadBalancer.Default;
+//        return new RandomLoadBalancer();
+        return new RoundRobinLoadBalancer();
+    }
+
+    @Bean
+    public Router router() {
+        return Router.Default;
     }
 }

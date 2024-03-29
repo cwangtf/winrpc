@@ -3,6 +3,8 @@ package cn.winwang.winrpc.demo.provider;
 import cn.winwang.winrpc.core.annotation.WinProvider;
 import cn.winwang.winrpc.demo.api.User;
 import cn.winwang.winrpc.demo.api.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,9 +19,15 @@ import java.util.Map;
 @Component
 @WinProvider
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    Environment environment;
+
     @Override
     public User findById(int id) {
-        return new User(id, "Win-" + System.currentTimeMillis());
+        return new User(id, "Win-"
+                + environment.getProperty("server.port")
+                + "_" + System.currentTimeMillis());
     }
 
     @Override
