@@ -2,6 +2,7 @@ package cn.winwang.winrpc.core.consumer;
 
 import cn.winwang.winrpc.core.annotation.WinConsumer;
 import cn.winwang.winrpc.core.api.LoadBalancer;
+import cn.winwang.winrpc.core.api.RegistryCenter;
 import cn.winwang.winrpc.core.api.Router;
 import cn.winwang.winrpc.core.api.RpcContext;
 import lombok.Data;
@@ -37,17 +38,11 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
 
         Router router = applicationContext.getBean(Router.class);
         LoadBalancer loadBalancer = applicationContext.getBean(LoadBalancer.class);
+        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
 
         RpcContext context = new RpcContext();
         context.setRouter(router);
         context.setLoadBalancer(loadBalancer);
-
-        String urls = environment.getProperty("winrpc.providers", "");
-        if (Strings.isEmpty(urls)) {
-            System.out.println("winrpc.providers is empty");
-        }
-        String[] providers = urls.split(",");
-
 
         String[] names = applicationContext.getBeanDefinitionNames();
         for (String name : names) {
@@ -60,7 +55,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
                     String serviceName = service.getCanonicalName();
                     Object consumer = stub.get(serviceName);
                     if (consumer == null) {
-                        consumer = createConsumer(service, context, List.of(providers));
+                        consumer = createFromRegistry(service, context, rc);
                     }
                     f.setAccessible(true);
                     f.set(bean, consumer);
@@ -69,6 +64,12 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
                 }
             });
         }
+    }
+
+    private Object createFromRegistry(Class<?> service, RpcContext context, RegistryCenter rc) {
+        String serviceName = service.getCanonicalName();
+        List<String> providers = rc.fetchAll(serviceName);
+        return createConsumer(service, context, providers);
     }
 
     private Object createConsumer(Class<?> service, RpcContext context, List<String> providers) {
