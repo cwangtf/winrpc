@@ -76,6 +76,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User[] findUsers(User[] users) {
+        return users;
+    }
+
+    @Override
     public List<User> getList(List<User> userList) {
         return userList;
     }
@@ -83,5 +88,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, User> getMap(Map<String, User> userMap) {
         return userMap;
+    }
+
+    @Override
+    public Boolean getFlag(boolean flag) {
+        return !flag;
     }
 }

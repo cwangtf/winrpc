@@ -31,8 +31,12 @@ public interface UserService {
 
     int[] getIds(int[] ids);
 
+    User[] findUsers(User[] users);
+
     List<User> getList(List<User> userList);
 
     Map<String, User> getMap(Map<String, User> userMap);
+
+    Boolean getFlag(boolean flag);
 
 }

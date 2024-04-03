@@ -2,7 +2,6 @@ package cn.winwang.winrpc.core.consumer;
 
 import cn.winwang.winrpc.core.api.*;
 import cn.winwang.winrpc.core.util.MethodUtils;
-import cn.winwang.winrpc.core.util.TypeUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -12,6 +11,8 @@ import java.io.IOException;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static cn.winwang.winrpc.core.util.TypeUtils.cast;
 
 /**
  * Description for this class.
@@ -70,8 +71,8 @@ public class WinInvocationHandler implements InvocationHandler {
                         System.out.println("valueType: " + valueType);
                         jsonResult.entrySet().stream().forEach(
                                 e -> {
-                                    Object key = TypeUtils.cast(e.getKey(), keyType);
-                                    Object value = TypeUtils.cast(e.getValue(), valueType);
+                                    Object key = cast(e.getKey(), keyType);
+                                    Object value = cast(e.getValue(), valueType);
                                     resultMap.put(key, value);
                                 }
                         );
@@ -85,7 +86,12 @@ public class WinInvocationHandler implements InvocationHandler {
                     Class<?> componentType = type.getComponentType();
                     Object resultArray = Array.newInstance(componentType, array.length);
                     for (int i = 0; i < array.length; i++) {
-                        Array.set(resultArray, i, array[i]);
+                        if (componentType.isPrimitive() || componentType.getPackageName().startsWith("java")) {
+                            Array.set(resultArray, i, array[i]);
+                        } else {
+                            Object castObject = cast(array[i], componentType);
+                            Array.set(resultArray, i, castObject);
+                        }
                     }
                     return resultArray;
                 } else if (List.class.isAssignableFrom(type)) {
@@ -96,7 +102,7 @@ public class WinInvocationHandler implements InvocationHandler {
                         Type actualType = parameterizedType.getActualTypeArguments()[0];
                         System.out.println(actualType);
                         for (Object o : array) {
-                            resultList.add(TypeUtils.cast(o, (Class<?>) actualType));
+                            resultList.add(cast(o, (Class<?>) actualType));
                         }
                     } else {
                         resultList.addAll(Arrays.asList(array));
@@ -107,7 +113,7 @@ public class WinInvocationHandler implements InvocationHandler {
                 }
 
             } else {
-                return TypeUtils.cast(data,type);
+                return cast(data,type);
             }
         } else {
             Exception ex = rpcResponse.getEx();
