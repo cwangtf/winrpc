@@ -1,13 +1,17 @@
 package cn.winwang.winrpc.core.provider;
 
 import cn.winwang.winrpc.core.annotation.WinProvider;
+import cn.winwang.winrpc.core.api.RegistryCenter;
 import cn.winwang.winrpc.core.api.RpcRequest;
 import cn.winwang.winrpc.core.api.RpcResponse;
 import cn.winwang.winrpc.core.meta.ProviderMeta;
 import cn.winwang.winrpc.core.util.MethodUtils;
 import cn.winwang.winrpc.core.util.TypeUtils;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.Data;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.LinkedMultiValueMap;
@@ -15,6 +19,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.util.*;
 
 /**
@@ -31,16 +36,38 @@ public class ProviderBootstrap implements ApplicationContextAware {
     // 桩子
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
 
+    private String instance;
+
+    @Value("${server.port}")
+    private String port;
+
     @PostConstruct // init-method
-    // PreDestroy
-    public void start() {
+    public void init() {
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(WinProvider.class);
         providers.forEach((x,y) -> System.out.println(x));
-//        skeleton.putAll(providers);
+        providers.values().forEach(x -> getInterface(x));
+    }
 
-        providers.values().forEach(
-                x -> getInterface(x)
-        );
+    @SneakyThrows
+    public void start() {
+        String ip = InetAddress.getLocalHost().getHostAddress();
+        instance = ip + "_" + port;
+        skeleton.keySet().forEach(this::registerService);
+    }
+
+    @PreDestroy
+    public void stop() {
+        skeleton.keySet().forEach(this::unregisterService);
+    }
+
+    private void registerService(String service) {
+        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        rc.register(service, instance);
+    }
+
+    private void unregisterService(String service) {
+        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        rc.unregister(service, instance);
     }
 
     private void getInterface(Object x) {
