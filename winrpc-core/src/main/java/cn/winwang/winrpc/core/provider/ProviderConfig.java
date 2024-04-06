@@ -35,7 +35,7 @@ public class ProviderConfig {
         };
     }
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
+    @Bean
     public RegistryCenter provide_rc() {
         return new ZkRegistryCenter();
     }
