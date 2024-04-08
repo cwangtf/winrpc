@@ -4,6 +4,7 @@ import cn.winwang.winrpc.core.api.RpcRequest;
 import cn.winwang.winrpc.core.api.RpcResponse;
 import cn.winwang.winrpc.core.provider.ProviderBootstrap;
 import cn.winwang.winrpc.core.provider.ProviderConfig;
+import cn.winwang.winrpc.core.provider.ProviderInvoker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -26,11 +27,11 @@ public class WinrpcDemoProviderApplication {
     // 使用HTTP + JSON 来实现序列化和通信
 
     @Autowired
-    ProviderBootstrap providerBootstrap;
+    ProviderInvoker providerInvoker;
 
     @RequestMapping("/")
     public RpcResponse invoke(@RequestBody RpcRequest request) {
-        return providerBootstrap.invoke(request);
+        return providerInvoker.invoke(request);
     }
 
     @Bean
@@ -42,7 +43,7 @@ public class WinrpcDemoProviderApplication {
             request.setMethodSign("findById@1_int");
             request.setArgs(new Object[]{100});
 
-            RpcResponse rpcResponse = invoke(request);
+            RpcResponse<Object> rpcResponse = invoke(request);
             System.out.println("return : " + rpcResponse.getData());
 
             // test 2 parameters method
@@ -51,7 +52,7 @@ public class WinrpcDemoProviderApplication {
             request1.setMethodSign("findById@2_int_java.lang.String");
             request1.setArgs(new Object[]{100, "CC"});
 
-            RpcResponse rpcResponse1 = invoke(request1);
+            RpcResponse<Object> rpcResponse1 = invoke(request1);
             System.out.println("return : " + rpcResponse1.getData());
 
         };
