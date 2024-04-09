@@ -7,6 +7,7 @@ import cn.winwang.winrpc.core.api.Router;
 import cn.winwang.winrpc.core.api.RpcContext;
 import cn.winwang.winrpc.core.registry.ChangedListener;
 import cn.winwang.winrpc.core.registry.Event;
+import cn.winwang.winrpc.core.util.MethodUtils;
 import lombok.Data;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.context.ApplicationContext;
@@ -50,7 +51,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         String[] names = applicationContext.getBeanDefinitionNames();
         for (String name : names) {
             Object bean = applicationContext.getBean(name);
-            List<Field> fields = findAnnotatedField(bean.getClass());
+            List<Field> fields = MethodUtils.findAnnotatedField(bean.getClass(), WinConsumer.class);
             fields.stream().forEach(f -> {
                 System.out.println(" ===> " + f.getName());
                 try {
@@ -92,20 +93,6 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         // Java 动态代理
         return Proxy.newProxyInstance(service.getClassLoader(),
                 new Class[]{service}, new WinInvocationHandler(service, context, providers));
-    }
-
-    private List<Field> findAnnotatedField(Class<?> aClass) {
-        List<Field> result = new ArrayList<>();
-        while (aClass != null) {
-            Field[] fields = aClass.getDeclaredFields();
-            for (Field f : fields) {
-                if (f.isAnnotationPresent(WinConsumer.class)) {
-                    result.add(f);
-                }
-            }
-            aClass = aClass.getSuperclass();
-        }
-        return result;
     }
 
 }

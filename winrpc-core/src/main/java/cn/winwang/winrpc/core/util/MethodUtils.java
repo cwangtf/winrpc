@@ -1,7 +1,13 @@
 package cn.winwang.winrpc.core.util;
 
+import cn.winwang.winrpc.core.annotation.WinConsumer;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Description for this class.
@@ -38,8 +44,18 @@ public class MethodUtils {
         return sb.toString();
     }
 
-    public static String methodSign(Method method, Class clz) {
-        return null;
+    public static List<Field> findAnnotatedField(Class<?> aClass, Class<? extends Annotation> annotationClass) {
+        List<Field> result = new ArrayList<>();
+        while (aClass != null) {
+            Field[] fields = aClass.getDeclaredFields();
+            for (Field f : fields) {
+                if (f.isAnnotationPresent(annotationClass)) {
+                    result.add(f);
+                }
+            }
+            aClass = aClass.getSuperclass();
+        }
+        return result;
     }
 
     public static void main(String[] args) {

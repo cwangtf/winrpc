@@ -96,6 +96,4 @@ public class ProviderBootstrap implements ApplicationContextAware {
         skeleton.add(itfer.getCanonicalName(), meta);
     }
 
-
-
 }
