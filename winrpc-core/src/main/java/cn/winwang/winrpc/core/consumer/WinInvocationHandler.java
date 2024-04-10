@@ -1,37 +1,31 @@
 package cn.winwang.winrpc.core.consumer;
 
-import cn.winwang.winrpc.core.api.*;
+import cn.winwang.winrpc.core.api.RpcContext;
+import cn.winwang.winrpc.core.api.RpcRequest;
+import cn.winwang.winrpc.core.api.RpcResponse;
+import cn.winwang.winrpc.core.consumer.http.OkHttpInvoker;
 import cn.winwang.winrpc.core.util.MethodUtils;
-import cn.winwang.winrpc.core.util.TypeUtils;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import okhttp3.*;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.util.List;
 
-import static cn.winwang.winrpc.core.util.TypeUtils.cast;
 import static cn.winwang.winrpc.core.util.TypeUtils.castMethodResult;
 
 /**
- * Description for this class.
+ * 消费端的动态代理处理类.
  *
  * @author winwang
  * @date 2024/3/18 23:38
  */
 public class WinInvocationHandler implements InvocationHandler {
-
-    final static MediaType JSONTYPE = MediaType.get("application/json; charset=utf-8");
-
     Class<?> service;
 
     RpcContext context;
 
     List<String> providers;
+
+    HttpInvoker httpInvoker = new OkHttpInvoker();
 
     public WinInvocationHandler(Class<?> clazz, RpcContext context, List<String> providers) {
         this.service = clazz;
@@ -56,7 +50,7 @@ public class WinInvocationHandler implements InvocationHandler {
         List<String> urls = context.getRouter().route(this.providers);
         String url = (String) context.getLoadBalancer().choose(urls);
         System.out.println("loadBalancer.choose(urls) ==> " + url);
-        RpcResponse<Object> rpcResponse = post(rpcRequest, url);
+        RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, url);
 
         if (rpcResponse.isStatus()) {
             Object data = rpcResponse.getData();
@@ -67,30 +61,4 @@ public class WinInvocationHandler implements InvocationHandler {
         }
     }
 
-
-
-    OkHttpClient client = new OkHttpClient().newBuilder()
-            .connectionPool(new ConnectionPool(16, 60, TimeUnit.SECONDS))
-            .readTimeout(1, TimeUnit.SECONDS) // 连接建立后对侧发送数据读取超时
-            .writeTimeout(1, TimeUnit.SECONDS) // 发给远程对侧超时
-            .connectTimeout(1, TimeUnit.SECONDS) // 建立HTTP\TCP连接超时
-            .build();
-
-    private RpcResponse<Object> post(RpcRequest rpcRequest, String url) {
-        String reqJson = JSON.toJSONString(rpcRequest);
-        System.out.println(" ===> reqJson = " + reqJson);
-        Request request = new Request.Builder()
-                .url(url)
-                .post(RequestBody.create(reqJson, JSONTYPE))
-                .build();
-        try {
-            String respJson = client.newCall(request).execute().body().string();
-            System.out.println(" ===> respJson = " + respJson);
-            RpcResponse<Object> rpcResponse = JSON.parseObject(respJson, RpcResponse.class);
-            return rpcResponse;
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-    }
 }
