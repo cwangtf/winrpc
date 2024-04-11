@@ -2,11 +2,9 @@ package cn.winwang.winrpc.core.provider;
 
 import cn.winwang.winrpc.core.annotation.WinProvider;
 import cn.winwang.winrpc.core.api.RegistryCenter;
-import cn.winwang.winrpc.core.api.RpcRequest;
-import cn.winwang.winrpc.core.api.RpcResponse;
+import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.meta.ProviderMeta;
 import cn.winwang.winrpc.core.util.MethodUtils;
-import cn.winwang.winrpc.core.util.TypeUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.Data;
@@ -17,10 +15,10 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Description for this class.
@@ -37,7 +35,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     // 桩子
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
 
-    private String instance;
+    private InstanceMeta instance;
 
     @Value("${server.port}")
     private String port;
@@ -53,7 +51,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     @SneakyThrows
     public void start() {
         String ip = InetAddress.getLocalHost().getHostAddress();
-        instance = ip + "_" + port;
+        instance = InstanceMeta.http(ip, Integer.valueOf(port));
         rc.start();
         skeleton.keySet().forEach(this::registerService);
     }

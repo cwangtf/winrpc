@@ -5,6 +5,7 @@ import cn.winwang.winrpc.core.api.LoadBalancer;
 import cn.winwang.winrpc.core.api.RegistryCenter;
 import cn.winwang.winrpc.core.api.Router;
 import cn.winwang.winrpc.core.api.RpcContext;
+import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.util.MethodUtils;
 import lombok.Data;
 import org.springframework.context.ApplicationContext;
@@ -69,24 +70,19 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
 
     private Object createFromRegistry(Class<?> service, RpcContext context, RegistryCenter rc) {
         String serviceName = service.getCanonicalName();
-        List<String> providers = mapUrl(rc.fetchAll(serviceName));
+        List<InstanceMeta> providers = rc.fetchAll(serviceName);
         System.out.println(" ===> map to providers: ");
         providers.forEach(System.out::println);
 
         rc.subscribe(serviceName, event -> {
             providers.clear();
-            providers.addAll(mapUrl(event.getData()));
+            providers.addAll(event.getData());
         });
 
         return createConsumer(service, context, providers);
     }
 
-    private List<String> mapUrl(List<String> nodes) {
-        return nodes.stream()
-                .map(x -> "http://" + x.replace('_', ':')).collect(Collectors.toList());
-    }
-
-    private Object createConsumer(Class<?> service, RpcContext context, List<String> providers) {
+    private Object createConsumer(Class<?> service, RpcContext context, List<InstanceMeta> providers) {
         // Java 动态代理
         return Proxy.newProxyInstance(service.getClassLoader(),
                 new Class[]{service}, new WinInvocationHandler(service, context, providers));

@@ -1,5 +1,6 @@
 package cn.winwang.winrpc.core.api;
 
+import cn.winwang.winrpc.core.meta.InstanceMeta;
 import lombok.Data;
 
 import java.util.List;
@@ -15,8 +16,8 @@ public class RpcContext {
 
     List<Filter> filterList;
 
-    Router router;
+    Router<InstanceMeta> router;
 
-    LoadBalancer loadBalancer;
+    LoadBalancer<InstanceMeta> loadBalancer;
 
 }

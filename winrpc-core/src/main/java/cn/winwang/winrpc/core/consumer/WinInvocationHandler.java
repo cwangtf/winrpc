@@ -4,6 +4,7 @@ import cn.winwang.winrpc.core.api.RpcContext;
 import cn.winwang.winrpc.core.api.RpcRequest;
 import cn.winwang.winrpc.core.api.RpcResponse;
 import cn.winwang.winrpc.core.consumer.http.OkHttpInvoker;
+import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.util.MethodUtils;
 
 import java.lang.reflect.InvocationHandler;
@@ -23,11 +24,11 @@ public class WinInvocationHandler implements InvocationHandler {
 
     RpcContext context;
 
-    List<String> providers;
+    List<InstanceMeta> providers;
 
     HttpInvoker httpInvoker = new OkHttpInvoker();
 
-    public WinInvocationHandler(Class<?> clazz, RpcContext context, List<String> providers) {
+    public WinInvocationHandler(Class<?> clazz, RpcContext context, List<InstanceMeta> providers) {
         this.service = clazz;
         this.context = context;
         this.providers = providers;
@@ -47,10 +48,10 @@ public class WinInvocationHandler implements InvocationHandler {
         rpcRequest.setMethodSign(MethodUtils.methodSign(method));
         rpcRequest.setArgs(args);
 
-        List<String> urls = context.getRouter().route(this.providers);
-        String url = (String) context.getLoadBalancer().choose(urls);
-        System.out.println("loadBalancer.choose(urls) ==> " + url);
-        RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, url);
+        List<InstanceMeta> instances = context.getRouter().route(this.providers);
+        InstanceMeta instance = context.getLoadBalancer().choose(instances);
+        System.out.println("loadBalancer.choose(instances) ==> " + instance);
+        RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instance.toString());
 
         if (rpcResponse.isStatus()) {
             Object data = rpcResponse.getData();
