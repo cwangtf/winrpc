@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Map;
 
 /**
- * Description for this class.
+ * 描述服务实例的元数据.
  *
  * @author winwang
  * @date 2024/4/11 23:36

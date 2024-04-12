@@ -5,3 +5,8 @@ spring:
     name: winrpc-demo-consumer
 winrpc:
   providers: http://localhost:8081,http://localhost:8082,http://localhost:8083
+
+app:
+  id: app1
+  namespace: public
+  env: dev

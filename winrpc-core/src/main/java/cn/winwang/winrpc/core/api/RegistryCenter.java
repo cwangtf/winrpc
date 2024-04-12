@@ -1,6 +1,7 @@
 package cn.winwang.winrpc.core.api;
 
 import cn.winwang.winrpc.core.meta.InstanceMeta;
+import cn.winwang.winrpc.core.meta.ServiceMeta;
 import cn.winwang.winrpc.core.registry.ChangedListener;
 
 import java.util.List;
@@ -18,14 +19,14 @@ public interface RegistryCenter {
     void stop(); // p/c
 
     // provider侧
-    void register(String service, InstanceMeta instance); // p
+    void register(ServiceMeta service, InstanceMeta instance); // p
 
-    void unregister(String service, InstanceMeta instance); // p
+    void unregister(ServiceMeta service, InstanceMeta instance); // p
 
     // consumer侧
-    List<InstanceMeta> fetchAll(String service); // c
+    List<InstanceMeta> fetchAll(ServiceMeta service); // c
 
-    void subscribe(String service, ChangedListener listener);
+    void subscribe(ServiceMeta service, ChangedListener listener);
     // void heartbeat();
 
     class StaticRegistryCenter implements RegistryCenter {
@@ -47,22 +48,22 @@ public interface RegistryCenter {
         }
 
         @Override
-        public void register(String service, InstanceMeta instance) {
+        public void register(ServiceMeta service, InstanceMeta instance) {
 
         }
 
         @Override
-        public void unregister(String service, InstanceMeta instance) {
+        public void unregister(ServiceMeta service, InstanceMeta instance) {
 
         }
 
         @Override
-        public List<InstanceMeta> fetchAll(String service) {
+        public List<InstanceMeta> fetchAll(ServiceMeta service) {
             return providers;
         }
 
         @Override
-        public void subscribe(String service, ChangedListener listener) {
+        public void subscribe(ServiceMeta service, ChangedListener listener) {
 
         }
     }

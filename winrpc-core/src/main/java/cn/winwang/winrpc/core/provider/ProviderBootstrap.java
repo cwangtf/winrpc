@@ -4,6 +4,7 @@ import cn.winwang.winrpc.core.annotation.WinProvider;
 import cn.winwang.winrpc.core.api.RegistryCenter;
 import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.meta.ProviderMeta;
+import cn.winwang.winrpc.core.meta.ServiceMeta;
 import cn.winwang.winrpc.core.util.MethodUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -40,6 +41,15 @@ public class ProviderBootstrap implements ApplicationContextAware {
     @Value("${server.port}")
     private String port;
 
+    @Value("${app.id}")
+    private String app;
+
+    @Value("${app.namespace}")
+    private String namespace;
+
+    @Value("${app.env}")
+    private String env;
+
     @PostConstruct // init-method
     public void init() {
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(WinProvider.class);
@@ -64,11 +74,15 @@ public class ProviderBootstrap implements ApplicationContextAware {
     }
 
     private void registerService(String service) {
-        rc.register(service, instance);
+        ServiceMeta serviceMeta = ServiceMeta.builder()
+                .app(app).namespace(namespace).env(env).name(service).build();
+        rc.register(serviceMeta, instance);
     }
 
     private void unregisterService(String service) {
-        rc.unregister(service, instance);
+        ServiceMeta serviceMeta = ServiceMeta.builder()
+                .app(app).namespace(namespace).env(env).name(service).build();
+        rc.unregister(serviceMeta, instance);
     }
 
     private void getInterface(Object x) {

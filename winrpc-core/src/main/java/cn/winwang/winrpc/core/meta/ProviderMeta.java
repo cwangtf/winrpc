@@ -5,7 +5,7 @@ import lombok.Data;
 import java.lang.reflect.Method;
 
 /**
- * Description for this class.
+ * 描述Provider的映射关系.
  *
  * @author winwang
  * @date 2024/3/24 14:55
