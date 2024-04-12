@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Description for this class.
+ * User Service Impl.
  *
  * @author  winwang
  * @date  2024/3/16 14:37
@@ -94,4 +94,16 @@ public class UserServiceImpl implements UserService {
     public Boolean getFlag(boolean flag) {
         return !flag;
     }
+
+    @Override
+    public User findById(long id) {
+        return new User(Long.valueOf(id).intValue(), "WinWang");
+    }
+
+    @Override
+    public User ex(boolean flag) {
+        if(flag) throw new RuntimeException("just throw an exception");
+        return new User(100, "Win100");
+    }
+
 }
