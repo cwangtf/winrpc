@@ -1,5 +1,6 @@
 package cn.winwang.winrpc.core.meta;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.lang.reflect.Method;
@@ -11,6 +12,7 @@ import java.lang.reflect.Method;
  * @date 2024/3/24 14:55
  */
 @Data
+@Builder
 public class ProviderMeta {
 
     Method method;

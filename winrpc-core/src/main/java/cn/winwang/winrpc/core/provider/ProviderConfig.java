@@ -1,15 +1,12 @@
 package cn.winwang.winrpc.core.provider;
 
 import cn.winwang.winrpc.core.api.RegistryCenter;
-import cn.winwang.winrpc.core.consumer.ConsumerBootstrap;
-import cn.winwang.winrpc.core.registry.ZkRegistryCenter;
+import cn.winwang.winrpc.core.registry.zk.ZkRegistryCenter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-
-import java.util.List;
 
 /**
  * Description for this class.

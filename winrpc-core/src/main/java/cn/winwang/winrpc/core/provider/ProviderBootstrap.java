@@ -55,7 +55,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(WinProvider.class);
         rc = applicationContext.getBean(RegistryCenter.class);
         providers.forEach((x,y) -> System.out.println(x));
-        providers.values().forEach(x -> getInterface(x));
+        providers.values().forEach(this::getInterface);
     }
 
     @SneakyThrows
@@ -85,27 +85,25 @@ public class ProviderBootstrap implements ApplicationContextAware {
         rc.unregister(serviceMeta, instance);
     }
 
-    private void getInterface(Object x) {
-        Arrays.stream(x.getClass().getInterfaces()).forEach(
-                itfer -> {
-                    Method[] methods = itfer.getMethods();
+    private void getInterface(Object impl) {
+        Arrays.stream(impl.getClass().getInterfaces()).forEach(
+                service -> {
+                    Method[] methods = service.getMethods();
                     for (Method method : methods) {
                         if (MethodUtils.checkLocalMethod(method)) {
                             continue;
                         }
-                        createProvider(itfer, x, method);
+                        createProvider(service, impl, method);
                     }
                 }
         );
     }
 
-    private void createProvider(Class<?> itfer, Object x, Method method) {
-        ProviderMeta meta = new ProviderMeta();
-        meta.setMethod(method);
-        meta.setServiceImpl(x);
-        meta.setMethodSign(MethodUtils.methodSign(method));
-        System.out.println(" create a provider:" + meta);
-        skeleton.add(itfer.getCanonicalName(), meta);
+    private void createProvider(Class<?> service, Object impl, Method method) {
+        ProviderMeta providerMeta = ProviderMeta.builder().method(method)
+                .serviceImpl(impl).methodSign(MethodUtils.methodSign(method)).build();
+        System.out.println(" create a provider:" + providerMeta);
+        skeleton.add(service.getCanonicalName(), providerMeta);
     }
 
 }
