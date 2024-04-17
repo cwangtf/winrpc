@@ -6,6 +6,7 @@ import cn.winwang.winrpc.core.api.Router;
 import cn.winwang.winrpc.core.cluster.RoundRobinLoadBalancer;
 import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.registry.zk.ZkRegistryCenter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -19,6 +20,7 @@ import org.springframework.core.annotation.Order;
  * @author winwang
  * @date 2024/3/18 23:22
  */
+@Slf4j
 @Configuration
 public class ConsumerConfig {
 
@@ -34,9 +36,9 @@ public class ConsumerConfig {
     @Order(Integer.MIN_VALUE)
     public ApplicationRunner consumerBootstrap_runner(@Autowired ConsumerBootstrap consumerBootstrap) {
         return x -> {
-            System.out.println("consumerBootstrap starting ...");
+            log.info("consumerBootstrap starting ...");
             consumerBootstrap.start();
-            System.out.println("consumerBootstrap started ...");
+            log.info("consumerBootstrap started ...");
         };
     }
 

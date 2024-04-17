@@ -1,6 +1,7 @@
 package cn.winwang.winrpc.core.util;
 
 import cn.winwang.winrpc.core.annotation.WinConsumer;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -15,6 +16,7 @@ import java.util.List;
  * @author winwang
  * @date 2024/3/20 23:15
  */
+@Slf4j
 public class MethodUtils {
 
     public static boolean checkLocalMethod(final String method) {
@@ -60,7 +62,7 @@ public class MethodUtils {
 
     public static void main(String[] args) {
         Arrays.stream(MethodUtils.class.getMethods()).forEach(
-                method -> System.out.println(methodSign(method))
+                method -> log.debug(methodSign(method))
         );
     }
 

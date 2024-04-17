@@ -6,6 +6,7 @@ import cn.winwang.winrpc.core.api.RpcResponse;
 import cn.winwang.winrpc.core.consumer.http.OkHttpInvoker;
 import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.util.MethodUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -19,6 +20,7 @@ import static cn.winwang.winrpc.core.util.TypeUtils.castMethodResult;
  * @author winwang
  * @date 2024/3/18 23:38
  */
+@Slf4j
 public class WinInvocationHandler implements InvocationHandler {
     Class<?> service;
 
@@ -50,7 +52,7 @@ public class WinInvocationHandler implements InvocationHandler {
 
         List<InstanceMeta> instances = context.getRouter().route(this.providers);
         InstanceMeta instance = context.getLoadBalancer().choose(instances);
-        System.out.println("loadBalancer.choose(instances) ==> " + instance);
+        log.debug("loadBalancer.choose(instances) ==> " + instance);
         RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instance.toUrl());
 
         if (rpcResponse.isStatus()) {
