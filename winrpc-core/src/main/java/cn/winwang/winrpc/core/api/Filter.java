@@ -17,7 +17,7 @@ public interface Filter {
 
     Object postfilter(RpcRequest request, RpcResponse response, Object result);
 
-//    Filter next();
+    // Filter next();
 
     Filter Default = new Filter() {
         @Override

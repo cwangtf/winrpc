@@ -6,6 +6,7 @@ import cn.winwang.winrpc.core.api.RegistryCenter;
 import cn.winwang.winrpc.core.api.Router;
 import cn.winwang.winrpc.core.cluster.RoundRobinLoadBalancer;
 import cn.winwang.winrpc.core.filter.CacheFilter;
+import cn.winwang.winrpc.core.filter.MockFilter;
 import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.registry.zk.ZkRegistryCenter;
 import lombok.extern.slf4j.Slf4j;
@@ -61,8 +62,13 @@ public class ConsumerConfig {
         return new ZkRegistryCenter();
     }
 
+//    @Bean
+//    public Filter filter1() {
+//        return new CacheFilter();
+//    }
+
     @Bean
-    public Filter filter() {
-        return new CacheFilter();
+    public Filter filter2() {
+        return new MockFilter();
     }
 }
