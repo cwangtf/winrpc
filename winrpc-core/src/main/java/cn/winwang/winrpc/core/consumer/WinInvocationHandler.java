@@ -1,5 +1,6 @@
 package cn.winwang.winrpc.core.consumer;
 
+import cn.winwang.winrpc.core.api.Filter;
 import cn.winwang.winrpc.core.api.RpcContext;
 import cn.winwang.winrpc.core.api.RpcRequest;
 import cn.winwang.winrpc.core.api.RpcResponse;
@@ -50,11 +51,32 @@ public class WinInvocationHandler implements InvocationHandler {
         rpcRequest.setMethodSign(MethodUtils.methodSign(method));
         rpcRequest.setArgs(args);
 
+        for (Filter filter : this.context.getFilterList()) {
+            Object preResult = filter.prefilter(rpcRequest);
+            if (preResult != null) {
+                log.debug(filter.getClass().getName() + " ===> prefilter: " + preResult);
+                return preResult;
+            }
+        }
+
         List<InstanceMeta> instances = context.getRouter().route(this.providers);
         InstanceMeta instance = context.getLoadBalancer().choose(instances);
         log.debug("loadBalancer.choose(instances) ==> " + instance);
-        RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instance.toUrl());
 
+        RpcResponse<?> rpcResponse = httpInvoker.post(rpcRequest, instance.toUrl());
+        Object result = castReturnResult(method, rpcResponse);
+
+        for (Filter filter : this.context.getFilterList()) {
+            Object filterResult = filter.postfilter(rpcRequest, rpcResponse, result);
+            if (filterResult != null) {
+                return filterResult;
+            }
+        }
+
+        return castReturnResult(method, rpcResponse);
+    }
+
+    private static Object castReturnResult(Method method, RpcResponse<?> rpcResponse) {
         if (rpcResponse.isStatus()) {
             Object data = rpcResponse.getData();
             return castMethodResult(method, data);

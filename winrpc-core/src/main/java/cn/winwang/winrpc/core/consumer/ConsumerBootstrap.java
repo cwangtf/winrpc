@@ -1,10 +1,7 @@
 package cn.winwang.winrpc.core.consumer;
 
 import cn.winwang.winrpc.core.annotation.WinConsumer;
-import cn.winwang.winrpc.core.api.LoadBalancer;
-import cn.winwang.winrpc.core.api.RegistryCenter;
-import cn.winwang.winrpc.core.api.Router;
-import cn.winwang.winrpc.core.api.RpcContext;
+import cn.winwang.winrpc.core.api.*;
 import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.meta.ServiceMeta;
 import cn.winwang.winrpc.core.util.MethodUtils;
@@ -52,10 +49,12 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         Router<InstanceMeta> router = applicationContext.getBean(Router.class);
         LoadBalancer<InstanceMeta> loadBalancer = applicationContext.getBean(LoadBalancer.class);
         RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        List<Filter> filters = applicationContext.getBeansOfType(Filter.class).values().stream().toList();
 
         RpcContext context = new RpcContext();
         context.setRouter(router);
         context.setLoadBalancer(loadBalancer);
+        context.setFilterList(filters);
 
         String[] names = applicationContext.getBeanDefinitionNames();
         for (String name : names) {

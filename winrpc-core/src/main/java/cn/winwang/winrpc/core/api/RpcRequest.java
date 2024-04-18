@@ -1,6 +1,7 @@
 package cn.winwang.winrpc.core.api;
 
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * Description for this class.
@@ -9,6 +10,7 @@ import lombok.Data;
  * @date 2024/3/16 15:16
  */
 @Data
+@ToString
 public class RpcRequest {
 
     private String service; // 接口:cn.winwang.winrpc.demo.api.UserService

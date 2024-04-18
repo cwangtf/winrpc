@@ -1,9 +1,11 @@
 package cn.winwang.winrpc.core.consumer;
 
+import cn.winwang.winrpc.core.api.Filter;
 import cn.winwang.winrpc.core.api.LoadBalancer;
 import cn.winwang.winrpc.core.api.RegistryCenter;
 import cn.winwang.winrpc.core.api.Router;
 import cn.winwang.winrpc.core.cluster.RoundRobinLoadBalancer;
+import cn.winwang.winrpc.core.filter.CacheFilter;
 import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.registry.zk.ZkRegistryCenter;
 import lombok.extern.slf4j.Slf4j;
@@ -57,5 +59,10 @@ public class ConsumerConfig {
     @Bean(initMethod = "start", destroyMethod = "stop")
     public RegistryCenter consumer_rc() {
         return new ZkRegistryCenter();
+    }
+
+    @Bean
+    public Filter filter() {
+        return new CacheFilter();
     }
 }
