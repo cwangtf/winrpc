@@ -1,0 +1,19 @@
+server:
+  port: 8089
+spring:
+  application:
+    name: winrpc-demo-consumer
+winrpc:
+  providers: http://localhost:8081,http://localhost:8082,http://localhost:8083
+  zkServer: localhost:2181
+  zkRoot: winrpc
+
+app:
+  id: app1
+  namespace: public
+  env: dev
+
+logging:
+  level:
+    root: info
+    cn.winwang.winrpc: debug
