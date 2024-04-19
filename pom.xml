@@ -19,7 +19,7 @@
         <module>winrpc-core</module>
         <module>winrpc-demo-api</module>
         <module>winrpc-demo-provider</module>
-<!--        <module>winrpc-demo-consumer</module>-->
+        <module>winrpc-demo-consumer</module>
     </modules>
 
 </project>
