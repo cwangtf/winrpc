@@ -23,12 +23,12 @@ public class OkHttpInvoker implements HttpInvoker {
 
     OkHttpClient client;
 
-    public OkHttpInvoker() {
+    public OkHttpInvoker(int timeout) {
         client = new OkHttpClient().newBuilder()
                 .connectionPool(new ConnectionPool(16, 60, TimeUnit.SECONDS))
-                .readTimeout(1, TimeUnit.SECONDS) // 连接建立后对侧发送数据读取超时
-                .writeTimeout(1, TimeUnit.SECONDS) // 发给远程对侧超时
-                .connectTimeout(1, TimeUnit.SECONDS) // 建立HTTP\TCP连接超时
+                .readTimeout(timeout, TimeUnit.MICROSECONDS) // 连接建立后对侧发送数据读取超时
+                .writeTimeout(timeout, TimeUnit.MICROSECONDS) // 发给远程对侧超时
+                .connectTimeout(timeout, TimeUnit.MICROSECONDS) // 建立HTTP\TCP连接超时
                 .build();
     }
 
@@ -45,8 +45,8 @@ public class OkHttpInvoker implements HttpInvoker {
             log.debug(" ===> respJson = " + respJson);
             RpcResponse<Object> rpcResponse = JSON.parseObject(respJson, RpcResponse.class);
             return rpcResponse;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            // e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
