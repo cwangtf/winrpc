@@ -1,12 +1,10 @@
 package cn.winwang.winrpc.core.consumer;
 
-import cn.winwang.winrpc.core.api.Filter;
-import cn.winwang.winrpc.core.api.RpcContext;
-import cn.winwang.winrpc.core.api.RpcRequest;
-import cn.winwang.winrpc.core.api.RpcResponse;
+import cn.winwang.winrpc.core.api.*;
 import cn.winwang.winrpc.core.consumer.http.OkHttpInvoker;
 import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.util.MethodUtils;
+import com.codahale.metrics.EWMA;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
@@ -80,7 +78,12 @@ public class WinInvocationHandler implements InvocationHandler {
         if (rpcResponse.isStatus()) {
             return castMethodResult(method, rpcResponse.getData());
         } else {
-            throw new RuntimeException(rpcResponse.getEx());
+            Exception exception = rpcResponse.getEx();
+            if (exception instanceof  WinrpcException ex) {
+                throw ex;
+            } else {
+                throw new WinrpcException(rpcResponse.getEx(), WinrpcException.UnknownEx);
+            }
         }
     }
 

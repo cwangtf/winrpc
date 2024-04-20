@@ -16,4 +16,4 @@ app:
 logging:
   level:
     root: error
-    cn.winwang.winrpc: info
+    cn.winwang.winrpc: debug
