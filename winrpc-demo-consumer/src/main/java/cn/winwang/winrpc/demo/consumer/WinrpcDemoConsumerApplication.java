@@ -38,7 +38,7 @@ public class WinrpcDemoConsumerApplication {
 //    @Autowired
 //    Demo2 demo2;
 
-    @RequestMapping("/")
+    @RequestMapping("/api/")
     public User findBy(@RequestParam("id") int id) {
         return userService.findById(id);
     }
