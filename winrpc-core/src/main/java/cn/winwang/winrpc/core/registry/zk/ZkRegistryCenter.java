@@ -1,7 +1,7 @@
 package cn.winwang.winrpc.core.registry.zk;
 
 import cn.winwang.winrpc.core.api.RegistryCenter;
-import cn.winwang.winrpc.core.api.WinrpcException;
+import cn.winwang.winrpc.core.api.RpcException;
 import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.meta.ServiceMeta;
 import cn.winwang.winrpc.core.registry.ChangedListener;
@@ -72,7 +72,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             log.info(" ===> register to zk: " + instancePath);
             client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, "provider".getBytes());
         } catch (Exception e) {
-            throw new WinrpcException(e);
+            throw new RpcException(e);
         }
     }
 
@@ -89,7 +89,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             log.info(" ===> unregister from zk: " + instancePath);
             client.delete().quietly().forPath(instancePath);
         } catch (Exception e) {
-            throw new WinrpcException(e);
+            throw new RpcException(e);
         }
     }
 
@@ -103,7 +103,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             nodes.forEach(System.out::println);
             return mapInstances(nodes);
         } catch (Exception e) {
-            throw new WinrpcException(e);
+            throw new RpcException(e);
         }
     }
 

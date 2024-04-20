@@ -4,7 +4,6 @@ import cn.winwang.winrpc.core.api.*;
 import cn.winwang.winrpc.core.consumer.http.OkHttpInvoker;
 import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.util.MethodUtils;
-import com.codahale.metrics.EWMA;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
@@ -79,10 +78,10 @@ public class WinInvocationHandler implements InvocationHandler {
             return castMethodResult(method, rpcResponse.getData());
         } else {
             Exception exception = rpcResponse.getEx();
-            if (exception instanceof  WinrpcException ex) {
+            if (exception instanceof  RpcException ex) {
                 throw ex;
             } else {
-                throw new WinrpcException(rpcResponse.getEx(), WinrpcException.UnknownEx);
+                throw new RpcException(rpcResponse.getEx(), RpcException.UnknownEx);
             }
         }
     }

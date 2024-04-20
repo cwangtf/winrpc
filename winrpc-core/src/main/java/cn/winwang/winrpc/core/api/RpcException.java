@@ -3,32 +3,32 @@ package cn.winwang.winrpc.core.api;
 import lombok.Data;
 
 /**
- * Description for this class.
+ * RPC 统一异常类.
  *
  * @author winwang
  * @date 2024/4/20 16:47
  */
 @Data
-public class WinrpcException extends RuntimeException {
+public class RpcException extends RuntimeException {
 
     private String errcode;
 
-    public WinrpcException() {
+    public RpcException() {
     }
 
-    public WinrpcException(String message) {
+    public RpcException(String message) {
         super(message);
     }
 
-    public WinrpcException(String message, Throwable cause) {
+    public RpcException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public WinrpcException(Throwable cause) {
+    public RpcException(Throwable cause) {
         super(cause);
     }
 
-    public WinrpcException(Throwable cause, String errcode) {
+    public RpcException(Throwable cause, String errcode) {
         super(cause);
         this.errcode = errcode;
     }
