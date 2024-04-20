@@ -12,7 +12,8 @@ import org.springframework.context.ApplicationContext;
 @SpringBootTest(classes = {WinrpcDemoConsumerApplication.class})
 class WinrpcDemoConsumerApplicationTests {
 
-    static ApplicationContext context;
+    static ApplicationContext context1;
+    static ApplicationContext context2;
 
     static TestZKServer zkServer = new TestZKServer();
 
@@ -20,13 +21,26 @@ class WinrpcDemoConsumerApplicationTests {
     static void init() {
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
-        System.out.println(" ====================================== ");
-        System.out.println(" ====================================== ");
+        System.out.println(" =============     ZK2182    ========== ");
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         zkServer.start();
-        context = SpringApplication.run(WinrpcDemoProviderApplication.class, "--server.port=8094",
-                "--winrpc.zkServer=localhost:2182", "--logging.level.cn.winwang.winrpc=info");
+        System.out.println(" ====================================== ");
+        System.out.println(" ====================================== ");
+        System.out.println(" =============      P8094    ========== ");
+        System.out.println(" ====================================== ");
+        System.out.println(" ====================================== ");
+        context1 = SpringApplication.run(WinrpcDemoProviderApplication.class,
+                "--server.port=8094", "--winrpc.zkServer=localhost:2182",
+                "--logging.level.cn.winwang.winrpc=info");
+        System.out.println(" ====================================== ");
+        System.out.println(" ====================================== ");
+        System.out.println(" =============      P8095    ========== ");
+        System.out.println(" ====================================== ");
+        System.out.println(" ====================================== ");
+        context2 = SpringApplication.run(WinrpcDemoProviderApplication.class,
+                "--server.port=8095", "--winrpc.zkServer=localhost:2182",
+                "--logging.level.cn.winwang.winrpc=info");
     }
 
     @Test
@@ -36,7 +50,8 @@ class WinrpcDemoConsumerApplicationTests {
 
     @AfterAll
     static void destroy() {
-        SpringApplication.exit(context, () -> 1);
+        SpringApplication.exit(context1, () -> 1);
+        SpringApplication.exit(context2, () -> 1);
         zkServer.stop();
     }
 

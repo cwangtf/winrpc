@@ -12,8 +12,10 @@ app:
   id: app1
   namespace: public
   env: dev
+  retries: 2
+  timeout: 1000
 
 logging:
   level:
     root: info
-    cn.winwang.winrpc: info
+    cn.winwang.winrpc: debug
