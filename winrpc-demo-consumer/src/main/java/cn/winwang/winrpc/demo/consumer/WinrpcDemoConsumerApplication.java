@@ -1,9 +1,12 @@
 package cn.winwang.winrpc.demo.consumer;
 
 import cn.winwang.winrpc.core.annotation.WinConsumer;
+import cn.winwang.winrpc.core.api.Router;
+import cn.winwang.winrpc.core.cluster.GrayRouter;
 import cn.winwang.winrpc.core.consumer.ConsumerConfig;
 import cn.winwang.winrpc.demo.api.User;
 import cn.winwang.winrpc.demo.api.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -40,6 +43,15 @@ public class WinrpcDemoConsumerApplication {
     @RequestMapping("/find/")
     public User find(@RequestParam("timeout") int timeout) {
         return userService.find(timeout);
+    }
+
+    @Autowired
+    Router router;
+
+    @RequestMapping("/gray/")
+    public String gray(@RequestParam("ratio") int ratio) {
+        ((GrayRouter)router).setGrayRatio(ratio);
+        return "OK-new gray ratio is " + ratio;
     }
 
     public static void main(String[] args) {

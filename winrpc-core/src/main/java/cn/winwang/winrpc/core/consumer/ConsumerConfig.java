@@ -4,6 +4,7 @@ import cn.winwang.winrpc.core.api.Filter;
 import cn.winwang.winrpc.core.api.LoadBalancer;
 import cn.winwang.winrpc.core.api.RegistryCenter;
 import cn.winwang.winrpc.core.api.Router;
+import cn.winwang.winrpc.core.cluster.GrayRouter;
 import cn.winwang.winrpc.core.cluster.RoundRobinLoadBalancer;
 import cn.winwang.winrpc.core.filter.CacheFilter;
 import cn.winwang.winrpc.core.filter.MockFilter;
@@ -31,6 +32,9 @@ public class ConsumerConfig {
     @Value("${winrpc.providers}")
     String servers;
 
+    @Value("${app.grayRatio}")
+    private int grayRatio;
+
     @Bean
     ConsumerBootstrap createConsumerBootstrap() {
         return new ConsumerBootstrap();
@@ -55,7 +59,7 @@ public class ConsumerConfig {
 
     @Bean
     public Router<InstanceMeta> router() {
-        return Router.Default;
+        return new GrayRouter(grayRatio);
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")

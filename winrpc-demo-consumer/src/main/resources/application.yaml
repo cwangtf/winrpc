@@ -14,8 +14,9 @@ app:
   env: dev
   retries: 2
   timeout: 1000
+  grayRatio: 10 # 流量百分比 0-100
 
 logging:
   level:
     root: error
-    cn.winwang.winrpc: info
+    cn.winwang.winrpc: debug
