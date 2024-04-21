@@ -1,7 +1,9 @@
 package cn.winwang.winrpc.core.meta;
 
+import com.alibaba.fastjson.JSON;
 import lombok.Data;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -23,7 +25,7 @@ public class InstanceMeta {
 
     private boolean status; // online or offline
 
-    private Map<String, String> parameters;
+    private Map<String, String> parameters = new HashMap<>(); // idc A B C
 
     public InstanceMeta(String scheme, String host, Integer port, String context) {
         this.scheme = scheme;
@@ -42,5 +44,9 @@ public class InstanceMeta {
 
     public String toUrl() {
         return String.format("%s://%s:%d/%s", scheme, host, port, context);
+    }
+
+    public String toMetas() {
+        return JSON.toJSONString(this.getParameters());
     }
 }

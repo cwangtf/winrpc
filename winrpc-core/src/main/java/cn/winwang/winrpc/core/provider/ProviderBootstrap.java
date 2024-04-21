@@ -52,6 +52,9 @@ public class ProviderBootstrap implements ApplicationContextAware {
     @Value("${app.env}")
     private String env;
 
+    @Value("#{${app.metas}}")  //Spel
+    Map<String, String> metas;
+
     @PostConstruct // init-method
     public void init() {
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(WinProvider.class);
@@ -64,6 +67,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     public void start() {
         String ip = InetAddress.getLocalHost().getHostAddress();
         instance = InstanceMeta.http(ip, Integer.valueOf(port));
+        instance.getParameters().putAll(this.metas);
         rc.start();
         skeleton.keySet().forEach(this::registerService);
     }
