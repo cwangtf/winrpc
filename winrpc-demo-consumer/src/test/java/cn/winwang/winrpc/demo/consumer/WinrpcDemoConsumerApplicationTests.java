@@ -32,7 +32,7 @@ class WinrpcDemoConsumerApplicationTests {
         System.out.println(" ====================================== ");
         context1 = SpringApplication.run(WinrpcDemoProviderApplication.class,
                 "--server.port=8094", "--winrpc.zkServer=localhost:2182",
-                "--logging.level.cn.winwang.winrpc=info");
+                "--logging.level.cn.winwang.winrpc=info","--app.metas={dc:'bj',gray:'false',unit:'B001'}");
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         System.out.println(" =============      P8095    ========== ");
@@ -40,7 +40,7 @@ class WinrpcDemoConsumerApplicationTests {
         System.out.println(" ====================================== ");
         context2 = SpringApplication.run(WinrpcDemoProviderApplication.class,
                 "--server.port=8095", "--winrpc.zkServer=localhost:2182",
-                "--logging.level.cn.winwang.winrpc=info");
+                "--logging.level.cn.winwang.winrpc=info","--app.metas={dc:'bj',gray:'false',unit:'B001'}");
     }
 
     @Test

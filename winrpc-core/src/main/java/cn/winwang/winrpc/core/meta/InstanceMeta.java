@@ -1,7 +1,10 @@
 package cn.winwang.winrpc.core.meta;
 
 import com.alibaba.fastjson.JSON;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +16,9 @@ import java.util.Map;
  * @date 2024/4/11 23:36
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(of = {"scheme", "host", "port", "context"})
 public class InstanceMeta {
 
     private String scheme;
