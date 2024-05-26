@@ -1,6 +1,8 @@
-package cn.winwang.winrpc.core.provider;
+package cn.winwang.winrpc.core.config;
 
 import cn.winwang.winrpc.core.api.RegistryCenter;
+import cn.winwang.winrpc.core.provider.ProviderBootstrap;
+import cn.winwang.winrpc.core.provider.ProviderInvoker;
 import cn.winwang.winrpc.core.registry.zk.ZkRegistryCenter;
 import cn.winwang.winrpc.core.transport.SpringBootTransport;
 import lombok.extern.slf4j.Slf4j;
@@ -22,28 +24,22 @@ import java.util.Map;
  */
 @Slf4j
 @Configuration
-@Import({SpringBootTransport.class})
+@Import({AppConfigProperties.class, ProviderConfigProperties.class, SpringBootTransport.class})
 public class ProviderConfig {
 
-    @Value("${server.port:8081}")
+    @Value("${server.port:8080}")
     private String port;
 
-    @Value("${app.id:app1}")
-    private String app;
+    @Autowired
+    AppConfigProperties appConfigProperties;
 
-    @Value("${app.namespace:public}")
-    private String namespace;
-
-    @Value("${app.env:dev}")
-    private String env;
-
-    @Value("#{${app.metas:{dc:'bj',gray:'false',unit:'B001'}}}")  //Spel
-    Map<String, String> metas;
+    @Autowired
+    ProviderConfigProperties providerConfigProperties;
 
 
     @Bean
     ProviderBootstrap providerBootstrap() {
-        return new ProviderBootstrap(port, app, namespace, env, metas);
+        return new ProviderBootstrap(port, appConfigProperties, providerConfigProperties);
     }
 
     @Bean

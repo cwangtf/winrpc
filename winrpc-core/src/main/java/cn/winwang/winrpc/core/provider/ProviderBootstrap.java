@@ -2,6 +2,8 @@ package cn.winwang.winrpc.core.provider;
 
 import cn.winwang.winrpc.core.annotation.WinProvider;
 import cn.winwang.winrpc.core.api.RegistryCenter;
+import cn.winwang.winrpc.core.config.AppConfigProperties;
+import cn.winwang.winrpc.core.config.ProviderConfigProperties;
 import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.meta.ProviderMeta;
 import cn.winwang.winrpc.core.meta.ServiceMeta;
@@ -35,23 +37,16 @@ public class ProviderBootstrap implements ApplicationContextAware {
     private RegistryCenter rc;
     private String port;
 
-    private String app;
-
-    private String namespace;
-
-    private String env;
-
-    private Map<String, String> metas;
+    private AppConfigProperties appProperties;
+    private ProviderConfigProperties providerProperties;
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
     private InstanceMeta instance;
 
-    public ProviderBootstrap(String port, String app, String namespace,
-                             String env, Map<String, String> metas) {
+    public ProviderBootstrap(String port, AppConfigProperties appProperties,
+                             ProviderConfigProperties providerProperties) {
         this.port = port;
-        this.app = app;
-        this.namespace = namespace;
-        this.env = env;
-        this.metas = metas;
+        this.appProperties = appProperties;
+        this.providerProperties = providerProperties;
     }
 
     @SneakyThrows
@@ -66,7 +61,7 @@ public class ProviderBootstrap implements ApplicationContextAware {
     @SneakyThrows
     public void start() {
         String ip = InetAddress.getLocalHost().getHostAddress();
-        instance = InstanceMeta.http(ip, Integer.valueOf(port)).addParams(this.metas);
+        instance = InstanceMeta.http(ip, Integer.valueOf(port)).addParams(providerProperties.getMetas());
         rc.start();
         skeleton.keySet().forEach(this::registerService);
     }
@@ -80,13 +75,15 @@ public class ProviderBootstrap implements ApplicationContextAware {
 
     private void registerService(String service) {
         ServiceMeta serviceMeta = ServiceMeta.builder()
-                .app(app).namespace(namespace).env(env).name(service).build();
+                .app(appProperties.getId()).namespace(appProperties.getNamespace())
+                .env(appProperties.getEnv()).name(service).build();
         rc.register(serviceMeta, instance);
     }
 
     private void unregisterService(String service) {
         ServiceMeta serviceMeta = ServiceMeta.builder()
-                .app(app).namespace(namespace).env(env).name(service).build();
+                .app(appProperties.getId()).namespace(appProperties.getNamespace())
+                .env(appProperties.getEnv()).name(service).build();
         rc.unregister(serviceMeta, instance);
     }
 

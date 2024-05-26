@@ -1,7 +1,7 @@
 package cn.winwang.winrpc.core.annotation;
 
-import cn.winwang.winrpc.core.consumer.ConsumerConfig;
-import cn.winwang.winrpc.core.provider.ProviderConfig;
+import cn.winwang.winrpc.core.config.ConsumerConfig;
+import cn.winwang.winrpc.core.config.ProviderConfig;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

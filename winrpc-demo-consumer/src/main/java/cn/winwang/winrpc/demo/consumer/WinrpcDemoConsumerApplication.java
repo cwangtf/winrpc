@@ -4,7 +4,7 @@ import cn.winwang.winrpc.core.annotation.WinConsumer;
 import cn.winwang.winrpc.core.api.Router;
 import cn.winwang.winrpc.core.api.RpcContext;
 import cn.winwang.winrpc.core.cluster.GrayRouter;
-import cn.winwang.winrpc.core.consumer.ConsumerConfig;
+import cn.winwang.winrpc.core.config.ConsumerConfig;
 import cn.winwang.winrpc.demo.api.User;
 import cn.winwang.winrpc.demo.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
