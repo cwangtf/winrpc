@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### flatten-maven-plugin ###
+.flattened-pom.xml
+
+### arthas ###
+arthas-output/

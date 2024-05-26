@@ -31,16 +31,28 @@ class WinrpcDemoConsumerApplicationTests {
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         context1 = SpringApplication.run(WinrpcDemoProviderApplication.class,
-                "--server.port=8094", "--winrpc.zkServer=localhost:2182",
-                "--logging.level.cn.winwang.winrpc=info","--app.metas={dc:'bj',gray:'false',unit:'B001'}");
+                "--server.port=8094",
+                "--winrpc.zkServer=localhost:2182",
+                "--winrpc.app.env=test",
+                "--logging.level.cn.winwang.winrpc=info",
+                "--winrpc.provider.metas.dc=bj",
+                "--winrpc.provider.metas.gray=false",
+                "--winrpc.provider.metas.unit=B001"
+        );
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         System.out.println(" =============      P8095    ========== ");
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         context2 = SpringApplication.run(WinrpcDemoProviderApplication.class,
-                "--server.port=8095", "--winrpc.zkServer=localhost:2182",
-                "--logging.level.cn.winwang.winrpc=info","--app.metas={dc:'bj',gray:'false',unit:'B001'}");
+                "--server.port=8095",
+                "--winrpc.zkServer=localhost:2182",
+                "--winrpc.app.env=test",
+                "--logging.level.cn.winwang.winrpc=info",
+                "--winrpc.provider.metas.dc=bj",
+                "--winrpc.provider.metas.gray=false",
+                "--winrpc.provider.metas.unit=B002"
+        );
     }
 
     @Test
