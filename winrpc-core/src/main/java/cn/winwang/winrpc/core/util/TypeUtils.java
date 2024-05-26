@@ -1,9 +1,7 @@
 package cn.winwang.winrpc.core.util;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -27,6 +25,7 @@ public class TypeUtils {
         }
         Class<?> aClass = origin.getClass();
         if (type.isAssignableFrom(aClass)) {
+            log.debug(" ======> assignable {} -> {}", aClass, type);
             return origin;
         }
 
@@ -34,8 +33,10 @@ public class TypeUtils {
             if (origin instanceof List list){
                 origin = list.toArray();
             }
+            log.debug(" ======> list/[] -> []/" + type);
             int length = Array.getLength(origin);
             Class<?> componentType = type.getComponentType();
+            log.debug(" ======> [] componentType : " + componentType);
             Object resultArray = Array.newInstance(componentType, length);
             for (int i = 0; i < length; i++) {
                 if (componentType.isPrimitive() || componentType.getPackageName().startsWith("java")) {
@@ -49,14 +50,17 @@ public class TypeUtils {
         }
 
         if (origin instanceof HashMap map) {
+            log.debug(" ======> map -> " + type);
             JSONObject jsonObject = new JSONObject(map);
             return jsonObject.toJavaObject(type);
         }
 
         if (origin instanceof JSONObject jsonObject) {
+            log.debug(" ======> JSONObject -> " + type);
             return jsonObject.toJavaObject(type);
         }
 
+        log.debug(" ======> Primitive types.");
         if (type.equals(Integer.class) || type.equals(Integer.TYPE)) {
             return Integer.valueOf(origin.toString());
         } else if (type.equals(Long.class) || type.equals(Long.TYPE)) {
@@ -89,8 +93,9 @@ public class TypeUtils {
         log.debug("castGeneric: data = " + data);
         log.debug("castGeneric: method.getReturnType() = " + type);
         log.debug("castGeneric: method.getGenericReturnType() = " + genericReturnType);
-        if (data instanceof Map map) {
-            if (Map.class.isAssignableFrom(type)) {
+        if (data instanceof Map map) { // data是map的情况包括两种，一种是HashMap，一种是JSONObject
+            if (Map.class.isAssignableFrom(type)) { // 目标类型是 Map，此时data可能是map也可能是JO
+                log.debug(" ======> map -> map");
                 Map resultMap = new HashMap();
                 log.debug(genericReturnType.toString());
                 if (genericReturnType instanceof ParameterizedType parameterizedType) {
@@ -108,14 +113,20 @@ public class TypeUtils {
                 }
                 return resultMap;
             }
-            if(data instanceof JSONObject jsonObject) {
+            if(data instanceof JSONObject jsonObject) {// 此时是Pojo，且数据是JO
+                log.debug(" ======> JSONObject -> Pojo");
                 return jsonObject.toJavaObject(type);
+            }else if(!Map.class.isAssignableFrom(type)){ // 此时是Pojo类型，数据是Map
+                log.debug(" ======> map -> Pojo");
+                return new JSONObject(map).toJavaObject(type);
             }else {
+                log.debug(" ======> map -> ?");
                 return data;
             }
         } else if (data instanceof List list) {
             Object[] array = list.toArray();
             if (type.isArray()) {
+                log.debug(" ======> list -> []");
                 Class<?> componentType = type.getComponentType();
                 Object resultArray = Array.newInstance(componentType, array.length);
                 for (int i = 0; i < array.length; i++) {
@@ -128,6 +139,7 @@ public class TypeUtils {
                 }
                 return resultArray;
             } else if (List.class.isAssignableFrom(type)) {
+                log.debug(" ======> list -> list");
                 List<Object> resultList = new ArrayList<>(array.length);
                 log.debug(genericReturnType.toString());
                 if (genericReturnType instanceof ParameterizedType parameterizedType) {

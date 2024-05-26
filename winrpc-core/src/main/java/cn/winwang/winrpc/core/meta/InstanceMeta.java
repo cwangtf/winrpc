@@ -52,6 +52,11 @@ public class InstanceMeta {
         return String.format("%s://%s:%d/%s", scheme, host, port, context);
     }
 
+    public InstanceMeta addParams(Map<String, String> params) {
+        this.getParameters().putAll(params);
+        return this;
+    }
+
     public String toMetas() {
         return JSON.toJSONString(this.getParameters());
     }

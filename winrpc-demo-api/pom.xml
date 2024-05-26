@@ -5,10 +5,10 @@
     <parent>
         <groupId>cn.winwang</groupId>
         <artifactId>winrpc</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${winrpc.version}</version>
     </parent>
     <artifactId>winrpc-demo-api</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${winrpc.version}</version>
     <name>winrpc-demo-api</name>
     <description>winrpc-demo-api</description>
 

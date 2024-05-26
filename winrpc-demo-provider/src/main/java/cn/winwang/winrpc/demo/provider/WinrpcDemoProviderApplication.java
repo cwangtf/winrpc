@@ -2,7 +2,6 @@ package cn.winwang.winrpc.demo.provider;
 
 import cn.winwang.winrpc.core.api.RpcRequest;
 import cn.winwang.winrpc.core.api.RpcResponse;
-import cn.winwang.winrpc.core.provider.ProviderBootstrap;
 import cn.winwang.winrpc.core.provider.ProviderConfig;
 import cn.winwang.winrpc.core.provider.ProviderInvoker;
 import cn.winwang.winrpc.demo.api.User;

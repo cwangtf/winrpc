@@ -51,7 +51,12 @@ public class WinInvocationHandler implements InvocationHandler {
         int timeout = Integer.parseInt(context.getParameters().getOrDefault("", "1000"));
         this.httpInvoker = new OkHttpInvoker(timeout);
         this.executor = Executors.newScheduledThreadPool(1);
-        this.executor.scheduleWithFixedDelay(this::halfOpen, 10, 60, TimeUnit.SECONDS);
+        int halfOpenInitialDelay = Integer.parseInt(context.getParameters()
+                .getOrDefault("app.halfOpenInitialDelay", "10000"));
+        int halfOpenDelay = Integer.parseInt(context.getParameters()
+                .getOrDefault("app.halfOpenDelay", "60000"));
+        this.executor.scheduleWithFixedDelay(this::halfOpen, halfOpenInitialDelay,
+                halfOpenDelay, TimeUnit.MILLISECONDS);
     }
 
     private void halfOpen() {
@@ -75,10 +80,12 @@ public class WinInvocationHandler implements InvocationHandler {
         rpcRequest.setArgs(args);
 
         int retries = Integer.parseInt(context.getParameters().getOrDefault("app.retries", "1"));
+        int faultLimit = Integer.parseInt(context.getParameters()
+                .getOrDefault("app.faultLimit", "10"));
         while (retries -- > 0) {
             log.debug(" ===> retries: " + retries);
             try {
-                for (Filter filter : this.context.getFilterList()) {
+                for (Filter filter : this.context.getFilters()) {
                     Object preResult = filter.prefilter(rpcRequest);
                     if (preResult != null) {
                         log.debug(filter.getClass().getName() + " ===> prefilter: " + preResult);
@@ -110,16 +117,12 @@ public class WinInvocationHandler implements InvocationHandler {
                     // 每一次异常，记录一次，统计30s的异常数。
 
                     synchronized (windows) {
-                        SlidingTimeWindow window = windows.get(url);
-                        if (window == null) {
-                            window = new SlidingTimeWindow();
-                            windows.put(url, window);
-                        }
+                        SlidingTimeWindow window = windows.computeIfAbsent(url, k -> new SlidingTimeWindow());
 
                         window.record(System.currentTimeMillis());
                         log.debug("instance {} in window with {}", url, window.getSum());
                         // 发生了10次，就做故障隔离
-                        if (window.getSum() >= 10) {
+                        if (window.getSum() >= faultLimit) {
                             isolate(instance);
                         }
                     }
@@ -132,11 +135,12 @@ public class WinInvocationHandler implements InvocationHandler {
                     if (!providers.contains(instance)) {
                         isolatedProviders.remove(instance);
                         providers.add(instance);
-                        log.debug("instance {} is recovered, isolatedProviders={}, providers={}", instance, isolatedProviders, providers);
+                        log.debug("instance {} is recovered, isolatedProviders={}, providers={}"
+                                , instance, isolatedProviders, providers);
                     }
                 }
 
-                for (Filter filter : this.context.getFilterList()) {
+                for (Filter filter : this.context.getFilters()) {
                     Object filterResult = filter.postfilter(rpcRequest, rpcResponse, result);
                     if (filterResult != null) {
                         return filterResult;

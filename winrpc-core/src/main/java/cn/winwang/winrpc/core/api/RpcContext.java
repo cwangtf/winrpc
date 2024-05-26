@@ -16,7 +16,7 @@ import java.util.Map;
 @Data
 public class RpcContext {
 
-    List<Filter> filterList;
+    List<Filter> filters;
 
     Router<InstanceMeta> router;
 
