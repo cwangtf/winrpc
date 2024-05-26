@@ -2,11 +2,13 @@ package cn.winwang.winrpc.core.provider;
 
 import cn.winwang.winrpc.core.api.RegistryCenter;
 import cn.winwang.winrpc.core.registry.zk.ZkRegistryCenter;
+import cn.winwang.winrpc.core.transport.SpringBootTransport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 
 /**
@@ -17,6 +19,7 @@ import org.springframework.core.annotation.Order;
  */
 @Slf4j
 @Configuration
+@Import({SpringBootTransport.class})
 public class ProviderConfig {
 
     @Bean
