@@ -1,6 +1,7 @@
 package cn.winwang.winrpc.demo.provider;
 
 import cn.winwang.winrpc.core.annotation.WinProvider;
+import cn.winwang.winrpc.core.api.RpcContext;
 import cn.winwang.winrpc.demo.api.User;
 import cn.winwang.winrpc.demo.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,4 +139,10 @@ public class UserServiceImpl implements UserService {
         this.timeoutPorts = timeoutPorts;
     }
 
+    @Override
+    public String echoParameter(String key) {
+        System.out.println(" ====>> RpcContext.ContextParameters: ");
+        RpcContext.ContextParameters.get().forEach((k,v)-> System.out.println(k+" -> " +v));
+        return RpcContext.getContextParameter(key);
+    }
 }

@@ -1,10 +1,12 @@
 package cn.winwang.winrpc.core.provider;
 
+import cn.winwang.winrpc.core.api.RpcContext;
+import cn.winwang.winrpc.core.api.RpcException;
 import cn.winwang.winrpc.core.api.RpcRequest;
 import cn.winwang.winrpc.core.api.RpcResponse;
-import cn.winwang.winrpc.core.api.RpcException;
 import cn.winwang.winrpc.core.meta.ProviderMeta;
 import cn.winwang.winrpc.core.util.TypeUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.MultiValueMap;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,6 +21,7 @@ import java.util.Optional;
  * @author winwang
  * @date 2024/4/7 23:33
  */
+@Slf4j
 public class ProviderInvoker {
 
     private MultiValueMap<String, ProviderMeta> skeleton;
@@ -28,6 +31,10 @@ public class ProviderInvoker {
     }
 
     public RpcResponse<Object> invoke(RpcRequest request) {
+        log.debug(" ===> ProviderInvoker.invoke(request:{})", request);
+        if(!request.getParams().isEmpty()) {
+            request.getParams().forEach(RpcContext::setContextParameter);
+        }
         RpcResponse<Object> rpcResponse = new RpcResponse();
         List<ProviderMeta> providerMetas = skeleton.get(request.getService());
         try {
@@ -37,12 +44,14 @@ public class ProviderInvoker {
             Object result = method.invoke(meta.getServiceImpl(), args);
             rpcResponse.setStatus(true);
             rpcResponse.setData(result);
-            return rpcResponse;
         } catch (InvocationTargetException e) {
             rpcResponse.setEx(new RpcException(e.getTargetException().getMessage()));
         } catch (IllegalAccessException | IllegalArgumentException e) {
             rpcResponse.setEx(new RpcException(e.getMessage()));
+        } finally {
+            RpcContext.ContextParameters.get().clear(); // 防止内存泄露和上下文污染
         }
+        log.debug(" ===> ProviderInvoker.invoke() = {}", rpcResponse);
 
         return rpcResponse;
     }

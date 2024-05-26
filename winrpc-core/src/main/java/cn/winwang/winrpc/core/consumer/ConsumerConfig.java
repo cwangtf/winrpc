@@ -6,8 +6,7 @@ import cn.winwang.winrpc.core.api.RegistryCenter;
 import cn.winwang.winrpc.core.api.Router;
 import cn.winwang.winrpc.core.cluster.GrayRouter;
 import cn.winwang.winrpc.core.cluster.RoundRobinLoadBalancer;
-import cn.winwang.winrpc.core.filter.CacheFilter;
-import cn.winwang.winrpc.core.filter.MockFilter;
+import cn.winwang.winrpc.core.filter.ParameterFilter;
 import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.registry.zk.ZkRegistryCenter;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +69,7 @@ public class ConsumerConfig {
 
     @Bean
     public Filter defaultFilter() {
-        return Filter.Default;
+        return new ParameterFilter();
     }
 
 //    @Bean
