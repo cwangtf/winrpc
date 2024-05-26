@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.winwang</groupId>
     <artifactId>winrpc</artifactId>
-    <version>${winrpc.version}</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>winrpc</name>
     <description>winrpc</description>
     <packaging>pom</packaging>
     <properties>
-        <winrpc.version>0.0.1</winrpc.version>
+        <revision>0.0.2-SNAPSHOT</revision>
         <spring.boot.version>3.2.3</spring.boot.version>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>

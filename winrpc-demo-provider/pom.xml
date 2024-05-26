@@ -5,10 +5,10 @@
     <parent>
         <groupId>cn.winwang</groupId>
         <artifactId>winrpc</artifactId>
-        <version>${winrpc.version}</version>
+        <version>0.0.2-SNAPSHOT</version>
     </parent>
     <artifactId>winrpc-demo-provider</artifactId>
-    <version>${winrpc.version}</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>winrpc-demo-provider</name>
     <description>winrpc-demo-provider</description>
     <dependencyManagement>
@@ -27,7 +27,7 @@
         <dependency>
             <groupId>cn.winwang</groupId>
             <artifactId>winrpc-demo-api</artifactId>
-            <version>${winrpc.version}</version>
+            <version>0.0.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>cn.winwang</groupId>
             <artifactId>winrpc-core</artifactId>
-            <version>${winrpc.version}</version>
+            <version>0.0.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

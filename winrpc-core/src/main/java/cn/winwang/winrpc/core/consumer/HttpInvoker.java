@@ -4,7 +4,7 @@ import cn.winwang.winrpc.core.api.RpcRequest;
 import cn.winwang.winrpc.core.api.RpcResponse;
 
 /**
- * Description for this class.
+ * Interface for http invoke.
  *
  * @author winwang
  * @date 2024/4/10 22:06

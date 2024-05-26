@@ -4,7 +4,7 @@ spring:
   application:
     name: winrpc-demo-consumer
 winrpc:
-  providers: http://localhost:8081,http://localhost:8082,http://localhost:8083
+#  providers: http://localhost:8081,http://localhost:8082,http://localhost:8083
   zkServer: localhost:2182
   zkRoot: winrpc
 

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -19,7 +18,7 @@ import org.springframework.core.annotation.Order;
 import java.util.List;
 
 /**
- * Description for this class.
+ * Config for consumer.
  *
  * @author winwang
  * @date 2024/3/18 23:22
@@ -28,8 +27,8 @@ import java.util.List;
 @Configuration
 public class ConsumerConfig {
 
-    @Value("${winrpc.providers}")
-    String servers;
+    @Value("${winrpc.providers:}")
+    String[] servers;
 
     @Value("${app.grayRatio:0}")
     private int grayRatio;
@@ -58,9 +57,6 @@ public class ConsumerConfig {
     @Value("${app.halfOpenDelay:60000}")
     private int halfOpenDelay;
 
-    @Autowired
-    ApplicationContext applicationContext;
-
     @Bean
     ConsumerBootstrap createConsumerBootstrap() {
         return new ConsumerBootstrap();
@@ -71,6 +67,7 @@ public class ConsumerConfig {
     public ApplicationRunner consumerBootstrap_runner(@Autowired ConsumerBootstrap consumerBootstrap) {
         return x -> {
             log.info("consumerBootstrap starting ...");
+            System.out.println("winrpc.providers => " + String.join(",", servers));
             consumerBootstrap.start();
             log.info("consumerBootstrap started ...");
         };
