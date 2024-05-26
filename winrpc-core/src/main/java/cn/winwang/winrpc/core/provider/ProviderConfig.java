@@ -5,14 +5,17 @@ import cn.winwang.winrpc.core.registry.zk.ZkRegistryCenter;
 import cn.winwang.winrpc.core.transport.SpringBootTransport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 
+import java.util.Map;
+
 /**
- * Description for this class.
+ * provider config class.
  *
  * @author winwang
  * @date 2024/3/16 17:20
@@ -22,9 +25,25 @@ import org.springframework.core.annotation.Order;
 @Import({SpringBootTransport.class})
 public class ProviderConfig {
 
+    @Value("${server.port:8081}")
+    private String port;
+
+    @Value("${app.id:app1}")
+    private String app;
+
+    @Value("${app.namespace:public}")
+    private String namespace;
+
+    @Value("${app.env:dev}")
+    private String env;
+
+    @Value("#{${app.metas:{dc:'bj',gray:'false',unit:'B001'}}}")  //Spel
+    Map<String, String> metas;
+
+
     @Bean
     ProviderBootstrap providerBootstrap() {
-        return new ProviderBootstrap();
+        return new ProviderBootstrap(port, app, namespace, env, metas);
     }
 
     @Bean

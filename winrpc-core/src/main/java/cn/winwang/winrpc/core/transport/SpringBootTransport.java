@@ -20,7 +20,7 @@ public class SpringBootTransport {
     @Autowired
     ProviderInvoker providerInvoker;
 
-    @RequestMapping("/winrpc/")
+    @RequestMapping("/winrpc")
     public RpcResponse<Object> invoke(@RequestBody RpcRequest request) {
         return providerInvoker.invoke(request);
     }

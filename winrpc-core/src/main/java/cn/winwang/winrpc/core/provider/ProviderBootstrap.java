@@ -11,7 +11,6 @@ import jakarta.annotation.PreDestroy;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.LinkedMultiValueMap;
@@ -32,29 +31,30 @@ import java.util.Map;
 @Slf4j
 public class ProviderBootstrap implements ApplicationContextAware {
 
-    ApplicationContext applicationContext;
-    RegistryCenter rc;
-
-    // 桩子
-    private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
-
-    private InstanceMeta instance;
-
-    @Value("${server.port}")
+    private ApplicationContext applicationContext;
+    private RegistryCenter rc;
     private String port;
 
-    @Value("${app.id}")
     private String app;
 
-    @Value("${app.namespace}")
     private String namespace;
 
-    @Value("${app.env}")
     private String env;
 
-    @Value("#{${app.metas}}")  //Spel
-    Map<String, String> metas;
+    private Map<String, String> metas;
+    private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
+    private InstanceMeta instance;
 
+    public ProviderBootstrap(String port, String app, String namespace,
+                             String env, Map<String, String> metas) {
+        this.port = port;
+        this.app = app;
+        this.namespace = namespace;
+        this.env = env;
+        this.metas = metas;
+    }
+
+    @SneakyThrows
     @PostConstruct // init-method
     public void init() {
         Map<String, Object> providers = applicationContext.getBeansWithAnnotation(WinProvider.class);
