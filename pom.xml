@@ -37,7 +37,7 @@
         </developer>
     </developers>
     <properties>
-        <winrpc.version>0.0.1</winrpc.version>
+        <winrpc.version>0.0.2</winrpc.version>
         <spring.boot.version>3.2.3</spring.boot.version>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>

@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,6 +28,7 @@ public class OkHttpInvoker implements HttpInvoker {
                 .readTimeout(timeout, TimeUnit.MICROSECONDS) // 连接建立后对侧发送数据读取超时
                 .writeTimeout(timeout, TimeUnit.MICROSECONDS) // 发给远程对侧超时
                 .connectTimeout(timeout, TimeUnit.MICROSECONDS) // 建立HTTP\TCP连接超时
+                .retryOnConnectionFailure(true)
                 .build();
     }
 
