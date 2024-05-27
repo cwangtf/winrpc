@@ -85,6 +85,7 @@ public class SlidingTimeWindow {
         return sum;
     }
 
+    // 计算sum
     public int calcSum() {
         long ts = System.currentTimeMillis() / 1000;
         if(ts > _curr_ts && ts < _curr_ts + size) {
