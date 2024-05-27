@@ -4,6 +4,7 @@ import cn.winwang.winrpc.core.api.RpcContext;
 import cn.winwang.winrpc.core.api.RpcException;
 import cn.winwang.winrpc.core.api.RpcRequest;
 import cn.winwang.winrpc.core.api.RpcResponse;
+import cn.winwang.winrpc.core.governance.SlidingTimeWindow;
 import cn.winwang.winrpc.core.meta.ProviderMeta;
 import cn.winwang.winrpc.core.util.TypeUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +13,12 @@ import org.springframework.util.MultiValueMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static cn.winwang.winrpc.core.api.RpcException.ExceedLimitEx;
 
 /**
  * invoke the service methods in provider.
@@ -26,8 +31,15 @@ public class ProviderInvoker {
 
     private MultiValueMap<String, ProviderMeta> skeleton;
 
+    private final int trafficControl;// = 20;
+
+    final Map<String, SlidingTimeWindow> windows = new HashMap<>();
+    final Map<String, String> metas;
+
     public ProviderInvoker(ProviderBootstrap providerBootstrap) {
         this.skeleton = providerBootstrap.getSkeleton();
+        this.metas = providerBootstrap.getProviderProperties().getMetas();
+        this.trafficControl = Integer.parseInt(metas.getOrDefault("tc", "20"));
     }
 
     public RpcResponse<Object> invoke(RpcRequest request) {
@@ -36,7 +48,20 @@ public class ProviderInvoker {
             request.getParams().forEach(RpcContext::setContextParameter);
         }
         RpcResponse<Object> rpcResponse = new RpcResponse();
-        List<ProviderMeta> providerMetas = skeleton.get(request.getService());
+        String service = request.getService();
+        synchronized (windows) {
+            SlidingTimeWindow window = windows.computeIfAbsent(service, k -> new SlidingTimeWindow());
+            if (window.calcSum() >= trafficControl) {
+                System.out.println(window);
+                throw new RpcException("service " + service + " invoked in 30s/[" +
+                        window.getSum() + "] larger than tpsLimit = " + trafficControl, ExceedLimitEx);
+            } else {
+                window.record(System.currentTimeMillis());
+                log.debug("service {} in window with {}", service, window.getSum());
+            }
+        }
+
+        List<ProviderMeta> providerMetas = skeleton.get(service);
         try {
             ProviderMeta meta = findProviderMeta(providerMetas, request.getMethodSign());
             Method method = meta.getMethod();
