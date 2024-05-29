@@ -37,7 +37,8 @@ class WinrpcDemoConsumerApplicationTests {
                 "--logging.level.cn.winwang.winrpc=info",
                 "--winrpc.provider.metas.dc=bj",
                 "--winrpc.provider.metas.gray=false",
-                "--winrpc.provider.metas.unit=B001"
+                "--winrpc.provider.metas.unit=B001",
+                "--winrpc.provider.metas.tc=300"
         );
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
@@ -51,7 +52,8 @@ class WinrpcDemoConsumerApplicationTests {
                 "--logging.level.cn.winwang.winrpc=info",
                 "--winrpc.provider.metas.dc=bj",
                 "--winrpc.provider.metas.gray=false",
-                "--winrpc.provider.metas.unit=B002"
+                "--winrpc.provider.metas.unit=B002",
+                "--winrpc.provider.metas.tc=300"
         );
     }
 

@@ -17,7 +17,7 @@ winrpc:
         dc: bj
         gray: false
         unit: B001
-        tc: 25
+        tc: 300
 
 logging:
   level:
