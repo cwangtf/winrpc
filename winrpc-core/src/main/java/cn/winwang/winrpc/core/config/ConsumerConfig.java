@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -26,14 +28,21 @@ import java.util.List;
  */
 @Slf4j
 @Configuration
-@Import({AppConfigProperties.class, ConsumerConfigProperties.class})
+@Import({AppProperties.class, ConsumerProperties.class})
 public class ConsumerConfig {
 
     @Autowired
-    AppConfigProperties appConfigProperties;
+    AppProperties appProperties;
 
     @Autowired
-    ConsumerConfigProperties consumerConfigProperties;
+    ConsumerProperties consumerProperties;
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = "apollo.bootstrap", value = "enabled")
+    ApolloChangedListener consumer_apolloChangedListener() {
+        return new ApolloChangedListener();
+    }
 
     @Bean
     ConsumerBootstrap createConsumerBootstrap() {
@@ -42,10 +51,10 @@ public class ConsumerConfig {
 
     @Bean
     @Order(Integer.MIN_VALUE + 1)
-    public ApplicationRunner consumerBootstrap_runner(@Autowired ConsumerBootstrap consumerBootstrap) {
+    public ApplicationRunner consumerBootstrap_runner(@Autowired ConsumerBootstrap consumer) {
         return x -> {
             log.info("consumerBootstrap starting ...");
-            consumerBootstrap.start();
+            consumer.start();
             log.info("consumerBootstrap started ...");
         };
     }
@@ -57,7 +66,7 @@ public class ConsumerConfig {
 
     @Bean
     public Router<InstanceMeta> router() {
-        return new GrayRouter(consumerConfigProperties.getGrayRatio());
+        return new GrayRouter(consumerProperties.getGrayRatio());
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
@@ -72,6 +81,7 @@ public class ConsumerConfig {
     }
 
     @Bean
+    @RefreshScope // context.refresh
     public RpcContext createContext(@Autowired Router router,
                                     @Autowired LoadBalancer loadBalancer,
                                     @Autowired List<Filter> filters) {
@@ -79,14 +89,10 @@ public class ConsumerConfig {
         context.setRouter(router);
         context.setLoadBalancer(loadBalancer);
         context.setFilters(filters);
-        context.getParameters().put("app.id", appConfigProperties.getId());
-        context.getParameters().put("app.namespace", appConfigProperties.getNamespace());
-        context.getParameters().put("app.env", appConfigProperties.getEnv());
-        context.getParameters().put("consumer.retries", String.valueOf(consumerConfigProperties.getRetries()));
-        context.getParameters().put("consumer.timeout", String.valueOf(consumerConfigProperties.getTimeout()));
-        context.getParameters().put("consumer.faultLimit", String.valueOf(consumerConfigProperties.getFaultLimit()));
-        context.getParameters().put("consumer.halfOpenInitialDelay", String.valueOf(consumerConfigProperties.getHalfOpenInitialDelay()));
-        context.getParameters().put("consumer.halfOpenDelay", String.valueOf(consumerConfigProperties.getHalfOpenDelay()));
+        context.getParameters().put("app.id", appProperties.getId());
+        context.getParameters().put("app.namespace", appProperties.getNamespace());
+        context.getParameters().put("app.env", appProperties.getEnv());
+        context.setConsumerProperties(consumerProperties);
         return context;
     }
 

@@ -9,12 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
-
-import java.util.Map;
 
 /**
  * provider config class.
@@ -24,35 +24,36 @@ import java.util.Map;
  */
 @Slf4j
 @Configuration
-@Import({AppConfigProperties.class, ProviderConfigProperties.class, SpringBootTransport.class})
+@Import({ProviderProperties.class, AppProperties.class, SpringBootTransport.class})
 public class ProviderConfig {
 
     @Value("${server.port:8080}")
     private String port;
 
-    @Autowired
-    AppConfigProperties appConfigProperties;
-
-    @Autowired
-    ProviderConfigProperties providerConfigProperties;
-
-
     @Bean
-    ProviderBootstrap providerBootstrap() {
-        return new ProviderBootstrap(port, appConfigProperties, providerConfigProperties);
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = "apollo.bootstrap", value = "enabled")
+    ApolloChangedListener provider_apolloChangedListener() {
+        return new ApolloChangedListener();
     }
 
     @Bean
-    ProviderInvoker providerInvoker(@Autowired ProviderBootstrap providerBootstrap) {
-        return new ProviderInvoker(providerBootstrap);
+    ProviderBootstrap providerBootstrap(@Autowired AppProperties ap,
+                                        @Autowired ProviderProperties pp) {
+        return new ProviderBootstrap(port, ap, pp);
+    }
+
+    @Bean
+    ProviderInvoker providerInvoker(@Autowired ProviderBootstrap provider) {
+        return new ProviderInvoker(provider);
     }
 
     @Bean
     @Order(Integer.MIN_VALUE)
-    public ApplicationRunner providerBootstrap_runner(@Autowired ProviderBootstrap providerBootstrap) {
+    public ApplicationRunner providerBootstrap_runner(@Autowired ProviderBootstrap provider) {
         return x -> {
             log.info("providerBootstrap starting ...");
-            providerBootstrap.start();
+            provider.start();
             log.info("providerBootstrap started ...");
         };
     }

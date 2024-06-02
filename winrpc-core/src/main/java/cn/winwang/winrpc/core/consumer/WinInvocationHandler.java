@@ -48,14 +48,11 @@ public class WinInvocationHandler implements InvocationHandler {
         this.service = clazz;
         this.context = context;
         this.providers = providers;
-        int timeout = Integer.parseInt(context.getParameters()
-                .getOrDefault("consumer.timeout", "1000"));
+        int timeout = context.getConsumerProperties().getTimeout();
         this.httpInvoker = new OkHttpInvoker(timeout);
         this.executor = Executors.newScheduledThreadPool(1);
-        int halfOpenInitialDelay = Integer.parseInt(context.getParameters()
-                .getOrDefault("consumer.halfOpenInitialDelay", "10000"));
-        int halfOpenDelay = Integer.parseInt(context.getParameters()
-                .getOrDefault("consumer.halfOpenDelay", "60000"));
+        int halfOpenInitialDelay = context.getConsumerProperties().getHalfOpenInitialDelay();
+        int halfOpenDelay = context.getConsumerProperties().getHalfOpenDelay();
         this.executor.scheduleWithFixedDelay(this::halfOpen, halfOpenInitialDelay,
                 halfOpenDelay, TimeUnit.MILLISECONDS);
     }
@@ -80,10 +77,8 @@ public class WinInvocationHandler implements InvocationHandler {
         rpcRequest.setMethodSign(MethodUtils.methodSign(method));
         rpcRequest.setArgs(args);
 
-        int retries = Integer.parseInt(context.getParameters()
-                .getOrDefault("consumer.retries", "1"));
-        int faultLimit = Integer.parseInt(context.getParameters()
-                .getOrDefault("consumer.faultLimit", "10"));
+        int retries = context.getConsumerProperties().getRetries();
+        int faultLimit = context.getConsumerProperties().getFaultLimit();
         while (retries -- > 0) {
             log.debug(" ===> retries: " + retries);
             try {

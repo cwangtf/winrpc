@@ -2,8 +2,8 @@ package cn.winwang.winrpc.core.provider;
 
 import cn.winwang.winrpc.core.annotation.WinProvider;
 import cn.winwang.winrpc.core.api.RegistryCenter;
-import cn.winwang.winrpc.core.config.AppConfigProperties;
-import cn.winwang.winrpc.core.config.ProviderConfigProperties;
+import cn.winwang.winrpc.core.config.AppProperties;
+import cn.winwang.winrpc.core.config.ProviderProperties;
 import cn.winwang.winrpc.core.meta.InstanceMeta;
 import cn.winwang.winrpc.core.meta.ProviderMeta;
 import cn.winwang.winrpc.core.meta.ServiceMeta;
@@ -37,13 +37,13 @@ public class ProviderBootstrap implements ApplicationContextAware {
     private RegistryCenter rc;
     private String port;
 
-    private AppConfigProperties appProperties;
-    private ProviderConfigProperties providerProperties;
+    private AppProperties appProperties;
+    private ProviderProperties providerProperties;
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
     private InstanceMeta instance;
 
-    public ProviderBootstrap(String port, AppConfigProperties appProperties,
-                             ProviderConfigProperties providerProperties) {
+    public ProviderBootstrap(String port, AppProperties appProperties,
+                             ProviderProperties providerProperties) {
         this.port = port;
         this.appProperties = appProperties;
         this.providerProperties = providerProperties;

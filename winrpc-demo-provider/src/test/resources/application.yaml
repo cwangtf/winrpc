@@ -16,7 +16,21 @@ winrpc:
         unit: B002
         tc: 300
 
+app:
+  id: app1
+apollo:
+  cacheDir: /opt/data/
+  cluster: default
+  meta: http://localhost:8080
+  autoUpdateInjectedSpringProperties: true
+  bootstrap:
+    enabled: true
+    namespaces: app1
+    eagerLoad:
+      enabled: false
+
 logging:
   level:
-    root: error
-    cn.winwang.winrpc: debug
+    root: info
+    cn.winwang.winrpc: info
+    com.ctrip: info

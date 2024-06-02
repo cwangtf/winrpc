@@ -11,9 +11,8 @@ import org.springframework.context.annotation.Configuration;
  * @date 2024/5/26 18:57
  */
 @Data
-@Configuration
 @ConfigurationProperties(prefix = "winrpc.app")
-public class AppConfigProperties {
+public class AppProperties {
 
     // for app instance
     private String id = "app1";;
