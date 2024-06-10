@@ -3,6 +3,7 @@ package cn.winwang.winrpc.core.config;
 import cn.winwang.winrpc.core.api.RegistryCenter;
 import cn.winwang.winrpc.core.provider.ProviderBootstrap;
 import cn.winwang.winrpc.core.provider.ProviderInvoker;
+import cn.winwang.winrpc.core.registry.win.WinRegisterCenter;
 import cn.winwang.winrpc.core.registry.zk.ZkRegistryCenter;
 import cn.winwang.winrpc.core.transport.SpringBootTransport;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +61,7 @@ public class ProviderConfig {
 
     @Bean
     public RegistryCenter provide_rc() {
-        return new ZkRegistryCenter();
+        return new WinRegisterCenter();
+//        return new ZkRegistryCenter();
     }
 }

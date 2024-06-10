@@ -9,12 +9,14 @@ import cn.winwang.winrpc.core.registry.Event;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -27,67 +29,136 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class WinRegisterCenter implements RegistryCenter {
 
+    private static final String REG_PATH = "/reg";
+    private static final String UNREG_PATH = "/unreg";
+    private static final String FINDALL_PATH = "/findAll";
+    private static final String VERSION_PATH = "/version";
+    private static final String RENEWS_PATH = "/renews";
+
     @Value("${winregistry.servers}")
     private String servers;
+
+    Map<String, Long> VERSIONS = new HashMap<>();
+    MultiValueMap<InstanceMeta, ServiceMeta> RENEWS = new LinkedMultiValueMap<>();
+    WinHealthChecker healthChecker = new WinHealthChecker();
+
 
     @Override
     public void start() {
         log.info(" ===>>> [WinRegistry] : start with servers : {}", servers);
-        executor = Executors.newScheduledThreadPool(1);
+        healthChecker.start();
+        providerCheck();
     }
 
     @Override
     public void stop() {
         log.info(" ===>>> [WinRegistry] : stop with servers : {}", servers);
-        executor.shutdown();
+        healthChecker.stop();
+    }
+
+    private void gracefulShutdown(ScheduledExecutorService executorService) {
+        executorService.shutdown();
         try {
-            executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
-            if (!executor.isTerminated()) {
-                executor.shutdownNow();
+            executorService.awaitTermination(1000, TimeUnit.MILLISECONDS);
+            if (!executorService.isTerminated()) {
+                executorService.shutdownNow();
             }
         } catch (InterruptedException e) {
 
         }
-
     }
 
     @Override
     public void register(ServiceMeta service, InstanceMeta instance) {
         log.info(" ===>>> [WinRegistry] : registry instance {} for {}", instance, service);
-        HttpInvoker.httpPost(JSON.toJSONString(instance), servers + "/reg?service=" + service.toPath(), InstanceMeta.class);
+        HttpInvoker.httpPost(JSON.toJSONString(instance), regPath(service), InstanceMeta.class);
         log.info(" ===>>> [WinRegistry] : registered {}", instance);
+        RENEWS.add(instance, service);
     }
+
+
 
     @Override
     public void unregister(ServiceMeta service, InstanceMeta instance) {
         log.info(" ===>>> [WinRegistry] : unregister instance {} for {}", instance, service);
-        HttpInvoker.httpPost(JSON.toJSONString(instance), servers + "/unreg?service=" + service.toPath(), InstanceMeta.class);
+        HttpInvoker.httpPost(JSON.toJSONString(instance), unregPath(service), InstanceMeta.class);
         log.info(" ===>>> [WinRegistry] : unregistered {}", instance);
+        RENEWS.remove(instance, service);
     }
+
+
 
     @Override
     public List<InstanceMeta> fetchAll(ServiceMeta service) {
         log.info(" ===>>> [WinRegistry] : find all instance for {}", service);
-        List<InstanceMeta> instances = HttpInvoker.httpGet(servers + "/findAll?service=" + service.toPath(), new TypeReference<List<InstanceMeta>>() {
+        List<InstanceMeta> instances = HttpInvoker.httpGet(findAllPath(service), new TypeReference<List<InstanceMeta>>() {
         });
         log.info(" ===>>> [WinRegistry] : findAll = {}", instances);
         return null;
     }
 
-    Map<String, Long> VERSIONS = new HashMap<>();
-    ScheduledExecutorService executor = null;
+    public void providerCheck() {
+        healthChecker.providerCheck(() -> {
+            RENEWS.keySet().stream().forEach(
+                    instance -> {
+
+                        Long timestamp = HttpInvoker.httpPost(JSON.toJSONString(instance), renewsPath(RENEWS.get(instance)), Long.class);
+                        log.info(" ====> [WinRegistry] : renew instance {} at {}", instance, timestamp);
+                    }
+            );
+        });
+    }
+
 
     @Override
     public void subscribe(ServiceMeta service, ChangedListener listener) {
-        executor.scheduleWithFixedDelay(() -> {
+        healthChecker.consumerCheck(() -> {
             Long version = VERSIONS.getOrDefault(service.toPath(), -1L);
-            Long newVersion = HttpInvoker.httpGet(servers + "/version?service=" + service.toPath(), Long.class);
+            Long newVersion = HttpInvoker.httpGet(versionPath(service), Long.class);
             log.info(" ===>>> [WinRegistry] : version = {}, newVersion = {}", version, newVersion);
             if (newVersion > version) {
                 List<InstanceMeta> instances = fetchAll(service);
                 listener.fire(new Event(instances));
                 VERSIONS.put(service.toPath(), newVersion);
             }
-        }, 1000, 5000, TimeUnit.MILLISECONDS);
+        });
+    }
+
+    @NotNull
+    private String regPath(ServiceMeta service) {
+        return path(REG_PATH, service);
+    }
+
+    @NotNull
+    private String unregPath(ServiceMeta service) {
+        return path(UNREG_PATH, service);
+    }
+
+    @NotNull
+    private String findAllPath(ServiceMeta service) {
+        return path(FINDALL_PATH, service);
+    }
+
+    private String versionPath(ServiceMeta service) {
+        return path("version", service);
+    }
+
+    private String path(String context, ServiceMeta service) {
+        return servers + context + "?service=" + service.toPath();
+    }
+
+    private String renewsPath(List<ServiceMeta> serviceList) {
+        return path(RENEWS_PATH, serviceList);
+    }
+
+    private String path(String context, List<ServiceMeta> serviceList) {
+        StringBuffer sb = new StringBuffer();
+        for (ServiceMeta service : serviceList) {
+            sb.append(service.toPath()).append(",");
+        }
+        String services = sb.toString();
+        if (services.endsWith(",")) services = services.substring(0, services.length() - 1);
+        log.info(" ====> [WinRegistry] : renew instance for {}", services);
+        return servers + context + "?services=" + services;
     }
 }

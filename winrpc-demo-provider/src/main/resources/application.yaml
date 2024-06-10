@@ -23,9 +23,10 @@ winregistry:
 
 logging:
   level:
-    root: debug
+    root: error
     cn.winwang.winrpc: debug
-    com.ctrip: debug
+    io.github.winwang: debug
+    com.ctrip: info
 
 app:
   id: app1

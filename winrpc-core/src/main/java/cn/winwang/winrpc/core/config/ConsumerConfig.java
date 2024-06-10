@@ -6,6 +6,7 @@ import cn.winwang.winrpc.core.cluster.RoundRobinLoadBalancer;
 import cn.winwang.winrpc.core.consumer.ConsumerBootstrap;
 import cn.winwang.winrpc.core.filter.ContextParameterFilter;
 import cn.winwang.winrpc.core.meta.InstanceMeta;
+import cn.winwang.winrpc.core.registry.win.WinRegisterCenter;
 import cn.winwang.winrpc.core.registry.zk.ZkRegistryCenter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,8 @@ public class ConsumerConfig {
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
     public RegistryCenter consumer_rc() {
-        return new ZkRegistryCenter();
+        return new WinRegisterCenter();
+//        return new ZkRegistryCenter();
     }
 
     @Bean

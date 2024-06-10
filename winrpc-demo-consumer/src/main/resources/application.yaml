@@ -19,6 +19,9 @@ winrpc:
     halfOpenInitialDelay: 10000
     halfOpenDelay: 60000
 
+winregistry:
+  servers: http://localhost:8484
+
 app:
   id: app1
 apollo:
