@@ -2,7 +2,7 @@ package cn.winwang.winrpc.demo.consumer;
 
 import cn.winwang.winrpc.core.test.TestZKServer;
 import cn.winwang.winrpc.demo.provider.WinrpcDemoProviderApplication;
-import com.ctrip.framework.apollo.mockserver.ApolloTestingServer;
+//import com.ctrip.framework.apollo.mockserver.ApolloTestingServer;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,7 +20,7 @@ class WinrpcDemoConsumerApplicationTests {
     static TestZKServer zkServer = new TestZKServer();
 
     //    @ClassRule // junit4
-    static ApolloTestingServer apollo = new ApolloTestingServer();
+//    static ApolloTestingServer apollo = new ApolloTestingServer();
 
     @SneakyThrows
     @BeforeAll
@@ -31,12 +31,12 @@ class WinrpcDemoConsumerApplicationTests {
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         zkServer.start();
-        System.out.println(" ====================================== ");
-        System.out.println(" ====================================== ");
-        System.out.println(" ===========     mock apollo    ======= ");
-        System.out.println(" ====================================== ");
-        System.out.println(" ====================================== ");
-        apollo.start();
+//        System.out.println(" ====================================== ");
+//        System.out.println(" ====================================== ");
+//        System.out.println(" ===========     mock apollo    ======= ");
+//        System.out.println(" ====================================== ");
+//        System.out.println(" ====================================== ");
+//        apollo.start();
         System.out.println(" ====================================== ");
         System.out.println(" ====================================== ");
         System.out.println(" =============      P8094    ========== ");
@@ -81,8 +81,8 @@ class WinrpcDemoConsumerApplicationTests {
         SpringApplication.exit(context2, () -> 1);
         System.out.println(" ===========     stop zookeeper server    ======= ");
         zkServer.stop();
-        System.out.println(" ===========     stop apollo mockserver   ======= ");
-        apollo.close();
+//        System.out.println(" ===========     stop apollo mockserver   ======= ");
+//        apollo.close();
         System.out.println(" ===========     destroy in after all     ======= ");
     }
 

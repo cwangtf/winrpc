@@ -38,12 +38,12 @@ public class ConsumerConfig {
     @Autowired
     ConsumerProperties consumerProperties;
 
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "apollo.bootstrap", value = "enabled")
-    ApolloChangedListener consumer_apolloChangedListener() {
-        return new ApolloChangedListener();
-    }
+//    @Bean
+//    @ConditionalOnMissingBean
+//    @ConditionalOnProperty(prefix = "apollo.bootstrap", value = "enabled")
+//    ApolloChangedListener consumer_apolloChangedListener() {
+//        return new ApolloChangedListener();
+//    }
 
     @Bean
     ConsumerBootstrap createConsumerBootstrap() {

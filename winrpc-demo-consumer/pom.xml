@@ -57,18 +57,18 @@
             <version>${winrpc.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.ctrip.framework.apollo</groupId>
-            <artifactId>apollo-mockserver</artifactId>
-            <version>${apollo.version}</version>
-            <scope>test</scope>
+<!--        <dependency>-->
+<!--            <groupId>com.ctrip.framework.apollo</groupId>-->
+<!--            <artifactId>apollo-mockserver</artifactId>-->
+<!--            <version>${apollo.version}</version>-->
+<!--            <scope>test</scope>-->
             <!--            <exclusions>-->
             <!--                <exclusion>-->
             <!--                    <groupId>junit</groupId>-->
             <!--                    <artifactId>junit</artifactId>-->
             <!--                </exclusion>-->
             <!--            </exclusions>-->
-        </dependency>
+<!--        </dependency>-->
     </dependencies>
 
     <build>

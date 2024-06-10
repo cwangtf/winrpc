@@ -1,14 +1,15 @@
 package cn.winwang.winrpc.demo.provider;
 
+import cn.winwang.winconfig.client.annotation.EnableWinConfig;
 import cn.winwang.winrpc.core.api.RpcRequest;
 import cn.winwang.winrpc.core.api.RpcResponse;
-import cn.winwang.winrpc.core.config.ApolloChangedListener;
+//import cn.winwang.winrpc.core.config.ApolloChangedListener;
 import cn.winwang.winrpc.core.config.ProviderConfig;
 import cn.winwang.winrpc.core.config.ProviderProperties;
 import cn.winwang.winrpc.core.transport.SpringBootTransport;
 import cn.winwang.winrpc.demo.api.User;
 import cn.winwang.winrpc.demo.api.UserService;
-import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
+//import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -29,13 +30,14 @@ import java.util.Map;
 @RestController
 @Import({ProviderConfig.class})
 @SpringBootApplication
-@EnableApolloConfig
+//@EnableApolloConfig
+@EnableWinConfig
 public class WinrpcDemoProviderApplication {
 
-    @Bean
-    ApolloChangedListener apolloChangedListener() {
-        return new ApolloChangedListener();
-    }
+//    @Bean
+//    ApolloChangedListener apolloChangedListener() {
+//        return new ApolloChangedListener();
+//    }
 
     public static void main(String[] args) {
         SpringApplication.run(WinrpcDemoProviderApplication.class, args);

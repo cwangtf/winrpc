@@ -31,12 +31,12 @@ public class ProviderConfig {
     @Value("${server.port:8080}")
     private String port;
 
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "apollo.bootstrap", value = "enabled")
-    ApolloChangedListener provider_apolloChangedListener() {
-        return new ApolloChangedListener();
-    }
+//    @Bean
+//    @ConditionalOnMissingBean
+//    @ConditionalOnProperty(prefix = "apollo.bootstrap", value = "enabled")
+//    ApolloChangedListener provider_apolloChangedListener() {
+//        return new ApolloChangedListener();
+//    }
 
     @Bean
     ProviderBootstrap providerBootstrap(@Autowired AppProperties ap,

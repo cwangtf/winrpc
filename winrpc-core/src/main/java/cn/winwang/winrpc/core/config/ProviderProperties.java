@@ -1,6 +1,6 @@
 package cn.winwang.winrpc.core.config;
 
-import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
+//import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import lombok.Data;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;

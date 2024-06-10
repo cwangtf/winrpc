@@ -45,7 +45,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <spring.boot.version>3.2.3</spring.boot.version>
-        <apollo.version>2.2.0</apollo.version>
+<!--        <apollo.version>2.2.0</apollo.version>-->
     </properties>
 
     <modules>
