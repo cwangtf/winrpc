@@ -79,7 +79,7 @@ public class WinRegisterCenter implements RegistryCenter {
         List<InstanceMeta> instances = HttpInvoker.httpGet(findAllPath(service), new TypeReference<List<InstanceMeta>>() {
         });
         log.info(" ===>>> [WinRegistry] : findAll = {}", instances);
-        return null;
+        return instances;
     }
 
     public void providerCheck() {

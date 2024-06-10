@@ -37,7 +37,7 @@
         </developer>
     </developers>
     <properties>
-        <winrpc.version>0.0.2</winrpc.version>
+        <winrpc.version>0.0.3</winrpc.version>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>

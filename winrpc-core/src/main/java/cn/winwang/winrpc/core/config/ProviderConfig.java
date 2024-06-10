@@ -60,6 +60,7 @@ public class ProviderConfig {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public RegistryCenter provide_rc() {
         return new WinRegisterCenter();
 //        return new ZkRegistryCenter();
