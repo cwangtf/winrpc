@@ -13,11 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 //@ExtendWith(MockApolloExtension.class)
 class WinrpcDemoProviderApplicationTests {
 
-    static TestZKServer zkServer = new TestZKServer();
+//    static TestZKServer zkServer = new TestZKServer();
 
 //    static ApolloTestingServer apollo = new ApolloTestingServer();
 
@@ -27,12 +27,12 @@ class WinrpcDemoProviderApplicationTests {
     @SneakyThrows
     @BeforeAll
     static void init() {
-        System.out.println(" ====================================== ");
-        System.out.println(" ====================================== ");
-        System.out.println(" =============     ZK2182    ========== ");
-        System.out.println(" ====================================== ");
-        System.out.println(" ====================================== ");
-        zkServer.start();
+//        System.out.println(" ====================================== ");
+//        System.out.println(" ====================================== ");
+//        System.out.println(" =============     ZK2182    ========== ");
+//        System.out.println(" ====================================== ");
+//        System.out.println(" ====================================== ");
+//        zkServer.start();
 //        System.out.println(" ====================================== ");
 //        System.out.println(" ====================================== ");
 //        System.out.println(" ===========     mock apollo    ======= ");
@@ -59,8 +59,8 @@ class WinrpcDemoProviderApplicationTests {
 
     @AfterAll
     static void destory() {
-        System.out.println(" ===========     stop zookeeper server    ======= ");
-        zkServer.stop();
+//        System.out.println(" ===========     stop zookeeper server    ======= ");
+//        zkServer.stop();
 //        System.out.println(" ===========     stop apollo mockserver   ======= ");
 //        apollo.close();
         System.out.println(" ===========     destroy in after all     ======= ");

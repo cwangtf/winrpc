@@ -32,6 +32,9 @@ app:
 #    eagerLoad:
 #      enabled: false
 
+winregistry:
+  servers: http://localhost:8484/registry
+
 logging:
   level:
     root: info

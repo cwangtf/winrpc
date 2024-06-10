@@ -19,7 +19,7 @@ public interface HttpInvoker {
 
     Logger log = LoggerFactory.getLogger(HttpInvoker.class);
 
-    HttpInvoker Default = new OkHttpInvoker(2000);
+    HttpInvoker Default = new OkHttpInvoker(2000);// 单元测试要改成100000
 
     RpcResponse post(RpcRequest rpcRequest, String url);
 
