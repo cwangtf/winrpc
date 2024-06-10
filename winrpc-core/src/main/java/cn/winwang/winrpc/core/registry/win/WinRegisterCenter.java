@@ -9,7 +9,6 @@ import cn.winwang.winrpc.core.registry.Event;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -17,8 +16,6 @@ import org.springframework.util.MultiValueMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * implementation for win registry center.
@@ -54,18 +51,6 @@ public class WinRegisterCenter implements RegistryCenter {
     public void stop() {
         log.info(" ===>>> [WinRegistry] : stop with servers : {}", servers);
         healthChecker.stop();
-    }
-
-    private void gracefulShutdown(ScheduledExecutorService executorService) {
-        executorService.shutdown();
-        try {
-            executorService.awaitTermination(1000, TimeUnit.MILLISECONDS);
-            if (!executorService.isTerminated()) {
-                executorService.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-
-        }
     }
 
     @Override
@@ -124,23 +109,20 @@ public class WinRegisterCenter implements RegistryCenter {
         });
     }
 
-    @NotNull
     private String regPath(ServiceMeta service) {
         return path(REG_PATH, service);
     }
 
-    @NotNull
     private String unregPath(ServiceMeta service) {
         return path(UNREG_PATH, service);
     }
 
-    @NotNull
     private String findAllPath(ServiceMeta service) {
         return path(FINDALL_PATH, service);
     }
 
     private String versionPath(ServiceMeta service) {
-        return path("version", service);
+        return path(VERSION_PATH, service);
     }
 
     private String path(String context, ServiceMeta service) {
